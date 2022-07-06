@@ -21,7 +21,7 @@ exports.createUser = async (userDTO) => {
     try {
       const [result] = await conn.query(query, params);
       // console.log(result);
-      return result;
+      return result.insertId;
     } catch (err) {
       console.log('createUser QUERY 오류');
       console.log(err);

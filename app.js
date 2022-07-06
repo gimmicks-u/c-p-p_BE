@@ -5,6 +5,7 @@ const session = require('express-session');
 const dotenv = require('dotenv');
 dotenv.config();
 const authRouter = require('./src/routes/authRouter');
+const usersRouter = require('./src/routes/usersRouter');
 const passport = require('passport');
 
 app.use(cookieParser(process.env.COOKIE_SECRET));
@@ -24,6 +25,7 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 app.use('/auth', authRouter);
+app.use('/users', usersRouter);
 
 app.listen(3300, () => {
   console.log('connected on 3300 port');

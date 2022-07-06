@@ -33,3 +33,27 @@ exports.createUser = async (userDTO) => {
     console.log(err);
   }
 };
+
+exports.selectUser = async (userId) => {
+  const query = `SELECT id,email,name,birth,nickname,
+  profileURL,provider,snsId,createdAt,updatedAt 
+  FROM users`;
+
+  const params = [userId];
+  try {
+    const conn = await pool.getConnection();
+    try {
+      const [rows] = await conn.query(query, params);
+      const row = rows[0];
+      return row ? row : {};
+    } catch (err) {
+      console.log('createUser QUERY 오류');
+      console.log(err);
+    } finally {
+      conn.release();
+    }
+  } catch (err) {
+    console.log('커넥션풀에서 커넥션 가져오기 오류');
+    console.log(err);
+  }
+};

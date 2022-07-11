@@ -121,3 +121,53 @@ exports.deleteUser = async (userDTO) => {
     console.log(err);
   }
 };
+
+exports.checkNickname = async (nickname) => {
+  const query = `
+  SELECT EXISTS
+  (
+    SELECT id FROM users WHERE nickname=?
+  ) AS success;
+  `;
+  const params = [nickname];
+  try {
+    const conn = await pool.getConnection();
+    try {
+      const [result] = await conn.query(query, params);
+      return result[0].success;
+    } catch (err) {
+      console.log('checkNickname QUERY 오류');
+      console.log(err);
+    } finally {
+      conn.release();
+    }
+  } catch (err) {
+    console.log('커넥션풀에서 커넥션 가져오기 오류');
+    console.log(err);
+  }
+};
+
+exports.checkEmail = async (email) => {
+  const query = `
+  SELECT EXISTS
+  (
+    SELECT id FROM users WHERE email=?
+  ) AS success;
+  `;
+  const params = [email];
+  try {
+    const conn = await pool.getConnection();
+    try {
+      const [result] = await conn.query(query, params);
+      return result[0].success;
+    } catch (err) {
+      console.log('checkEmail QUERY 오류');
+      console.log(err);
+    } finally {
+      conn.release();
+    }
+  } catch (err) {
+    console.log('커넥션풀에서 커넥션 가져오기 오류');
+    console.log(err);
+  }
+};

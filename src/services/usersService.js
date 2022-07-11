@@ -35,3 +35,23 @@ exports.deleteUser = async (userDTO) => {
 
   return result;
 };
+
+exports.checkNickname = async (nickname) => {
+  const hasNickname = await usersDao.checkNickname(nickname);
+  // 닉네임 존재하면 check = 1, 존재하지 않으면 0
+  const result = hasNickname
+    ? { message: '중복된 닉네임입니다', status: 400 }
+    : { message: '사용할 수 있는 닉네임입니다', status: 200 };
+
+  return result;
+};
+
+exports.checkEmail = async (email) => {
+  const hasEmail = await usersDao.checkEmail(email);
+  // 닉네임 존재하면 check = 1, 존재하지 않으면 0
+  const result = hasEmail
+    ? { message: '중복된 이메일입니다', status: 400 }
+    : { message: '사용할 수 있는 이메일입니다', status: 200 };
+
+  return result;
+};

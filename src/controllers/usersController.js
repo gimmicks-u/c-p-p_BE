@@ -44,3 +44,23 @@ exports.deleteUser = async (req, res) => {
   }
   console.log('checkPassword 이후');
 };
+
+exports.checkNickname = async (req, res) => {
+  const nickname = req.query.nickname;
+
+  result = await usersService.checkNickname(nickname);
+  const { status, ...response } = result;
+  // 응답
+  res.status(status);
+  res.json(response);
+};
+
+exports.checkEmail = async (req, res) => {
+  const email = req.query.email;
+
+  result = await usersService.checkEmail(email);
+  const { status, ...response } = result;
+  // 응답
+  res.status(status);
+  res.json(response);
+};

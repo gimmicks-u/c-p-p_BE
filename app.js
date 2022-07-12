@@ -7,6 +7,7 @@ dotenv.config();
 const authRouter = require('./src/routes/authRouter');
 const usersRouter = require('./src/routes/usersRouter');
 const postsRouter = require('./src/routes/postsRouter');
+const cafesRouter = require('./src/routes/cafesRouter');
 const passport = require('passport');
 const cors = require('cors');
 
@@ -37,6 +38,7 @@ app.use(passport.session());
 app.use('/auth', authRouter);
 app.use('/users', usersRouter);
 app.use('/posts', postsRouter);
+app.use('/cafes', cafesRouter);
 
 app.listen(3300, () => {
   console.log('connected on 3300 port');

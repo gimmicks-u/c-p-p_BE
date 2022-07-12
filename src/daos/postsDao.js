@@ -67,3 +67,90 @@ exports.selectPosts = async (userId, cafeId) => {
 //     console.log(err);
 //   }
 // };
+
+exports.createPost = async (postDTO) => {
+  const query = `
+    INSERT INTO posts (userId, cafeId, content, visited, receiptURL, isSponsored) 
+    VALUES(?, ?, ?, ?, ?, ?);
+  `;
+  const params = [
+    postDTO.userId,
+    postDTO.cafeId,
+    postDTO.content,
+    postDTO.visited,
+    postDTO.receiptURL,
+    postDTO.isSponsored,
+  ];
+
+  try {
+    const conn = await pool.getConnection();
+    try {
+      const [result] = await conn.query(query, params);
+      return result.insertId;
+    } catch (err) {
+      console.log('createPosts QUERY 오류');
+      console.log(err);
+    } finally {
+      conn.release();
+    }
+  } catch (err) {
+    console.log('커넥션풀에서 커넥션 가져오기 오류');
+    console.log(err);
+  }
+};
+
+exports.createPhoto = async (photoDTO) => {
+  const query = `
+    INSERT INTO photos (postId, photoURL)
+    VALUES ?;
+  `;
+  const params = [photoDTO];
+
+  try {
+    const conn = await pool.getConnection();
+    try {
+      const [result] = await conn.query(query, params);
+      return result.insertId;
+    } catch (err) {
+      console.log('createPhoto QUERY 오류');
+      console.log(err);
+    } finally {
+      conn.release();
+    }
+  } catch (err) {
+    console.log('커넥션풀에서 커넥션 가져오기 오류');
+    console.log(err);
+  }
+};
+
+exports.createRate = async (rateDTO) => {
+  const query = `
+    INSERT INTO rates (id, taste, vibe, service, parking, bathroom, amenity)
+    VALUES (?, ?, ?, ?, ?, ?, ?);
+  `;
+  const params = [
+    rateDTO.postId,
+    rateDTO.taste,
+    rateDTO.vibe,
+    rateDTO.service,
+    rateDTO.parking,
+    rateDTO.bathroom,
+    rateDTO.amenity,
+  ];
+
+  try {
+    const conn = await pool.getConnection();
+    try {
+      const [result] = await conn.query(query, params);
+      return result.insertId;
+    } catch (err) {
+      console.log('createPhoto QUERY 오류');
+      console.log(err);
+    } finally {
+      conn.release();
+    }
+  } catch (err) {
+    console.log('커넥션풀에서 커넥션 가져오기 오류');
+    console.log(err);
+  }
+};

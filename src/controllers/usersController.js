@@ -48,7 +48,7 @@ exports.deleteUser = async (req, res) => {
 exports.checkNickname = async (req, res) => {
   const nickname = req.query.nickname;
 
-  result = await usersService.checkNickname(nickname);
+  const result = await usersService.checkNickname(nickname);
   const { status, ...response } = result;
   // 응답
   res.status(status);
@@ -58,9 +58,20 @@ exports.checkNickname = async (req, res) => {
 exports.checkEmail = async (req, res) => {
   const email = req.query.email;
 
-  result = await usersService.checkEmail(email);
+  const result = await usersService.checkEmail(email);
   const { status, ...response } = result;
   // 응답
   res.status(status);
   res.json(response);
+};
+
+exports.getUserPosts = async (req, res) => {
+  const { id: userId } = req.params;
+  console.log(userId);
+
+  // result = await usersService.checkEmail(userId);
+  // const { status, ...response } = result;
+  // // 응답
+  // res.status(status);
+  // res.json(response);
 };

@@ -55,3 +55,13 @@ exports.checkEmail = async (email) => {
 
   return result;
 };
+
+exports.checkEmail = async (userId) => {
+  const hasEmail = await usersDao.checkEmail(email);
+  // 닉네임 존재하면 check = 1, 존재하지 않으면 0
+  const result = hasEmail
+    ? { message: '중복된 이메일입니다', status: 400 }
+    : { message: '사용할 수 있는 이메일입니다', status: 200 };
+
+  return result;
+};

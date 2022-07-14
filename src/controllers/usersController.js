@@ -67,11 +67,10 @@ exports.checkEmail = async (req, res) => {
 
 exports.getUserPosts = async (req, res) => {
   const { id: userId } = req.params;
-  console.log(userId);
 
-  // result = await usersService.checkEmail(userId);
-  // const { status, ...response } = result;
-  // // 응답
-  // res.status(status);
-  // res.json(response);
+  const result = await usersService.getUserPosts(userId);
+  const { status, userPosts } = result;
+  // 응답
+  res.status(status);
+  res.json(userPosts);
 };

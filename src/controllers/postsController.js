@@ -10,12 +10,20 @@ exports.selectPosts = (req, res, next) => {
 };
 
 exports.createPost = async (req, res) => {
-  // const { userId } = req.cookie.id;
-  const userId = 16;
-  const { content, visited, photoURLs, receiptURL, isSponsored, cafeId, rate } =
-    req.body;
+  // const { userId } = req.user.id;
 
-  let postId;
+  const {
+    userId,
+    content,
+    visited,
+    photoURLs,
+    receiptURL,
+    isSponsored,
+    cafeId,
+    rate,
+  } = req.body;
+
+  let postId = null;
   try {
     // 1. post
     const postDTO = {

@@ -171,3 +171,32 @@ exports.checkEmail = async (email) => {
     console.log(err);
   }
 };
+
+exports.selectUserPosts = async (userId) => {
+  const query = `
+  SELECT posts.id, photoURL, cafes.name AS cafeName, cafes.address AS cafeAddress
+    FROM posts 
+      INNER JOIN photos
+        ON posts.id=photos.postId 
+      INNER JOIN cafes
+        ON posts.cafeId=cafes.id
+  WHERE posts.userId=?
+  GROUP BY posts.id
+  `;
+  const params = [userId];
+  try {
+    const conn = await pool.getConnection();
+    try {
+      const [result] = await conn.query(query, params);
+      return result;
+    } catch (err) {
+      console.log('selectUserPosts QUERY 오류');
+      console.log(err);
+    } finally {
+      conn.release();
+    }
+  } catch (err) {
+    console.log('커넥션풀에서 커넥션 가져오기 오류');
+    console.log(err);
+  }
+};

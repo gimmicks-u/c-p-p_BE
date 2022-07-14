@@ -1,3 +1,4 @@
+const { json } = require('express');
 const usersService = require('../services/usersService');
 
 exports.signUpLocal = async (req, res) => {
@@ -69,8 +70,18 @@ exports.getUserPosts = async (req, res) => {
   const { id: userId } = req.params;
 
   const result = await usersService.getUserPosts(userId);
-  const { status, userPosts } = result;
+  const { status, userPosts, ...message } = result;
   // 응답
   res.status(status);
-  res.json(userPosts);
+  userPosts ? res.json(userPosts) : res.json(message);
+};
+
+exports.getStoredPosts = async (req, res) => {
+  const { id: userId } = req.params;
+
+  const result = await usersService.getStoredPosts(userId);
+  const { status, storedPosts, ...message } = result;
+  // 응답
+  res.status(status);
+  storedPosts ? res.json(storedPosts) : res.json(message);
 };

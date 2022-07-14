@@ -58,8 +58,20 @@ exports.checkEmail = async (email) => {
 
 exports.getUserPosts = async (userId) => {
   const userPosts = await usersDao.selectUserPosts(userId);
-  const result = userPosts
-    ? { userPosts: [...userPosts], status: 200 }
-    : { message: '잘못된 요청입니다.', status: 200 };
+  const result =
+    userPosts.length !== 0
+      ? { userPosts: [...userPosts], status: 200 }
+      : { message: '잘못된 요청입니다.', status: 400 };
+
+  return result;
+};
+
+exports.getStoredPosts = async (userId) => {
+  const storedPosts = await usersDao.selectStoredPosts(userId);
+  const result =
+    storedPosts.length !== 0
+      ? { storedPosts: [...storedPosts], status: 200 }
+      : { message: '잘못된 요청입니다.', status: 400 };
+
   return result;
 };

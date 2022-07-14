@@ -180,7 +180,7 @@ exports.selectUserPosts = async (userId) => {
         ON posts.id=photos.postId 
       INNER JOIN cafes
         ON posts.cafeId=cafes.id
-  WHERE posts.userId=?
+          WHERE posts.userId=?
   GROUP BY posts.id
   `;
   const params = [userId];
@@ -191,6 +191,37 @@ exports.selectUserPosts = async (userId) => {
       return result;
     } catch (err) {
       console.log('selectUserPosts QUERY 오류');
+      console.log(err);
+    } finally {
+      conn.release();
+    }
+  } catch (err) {
+    console.log('커넥션풀에서 커넥션 가져오기 오류');
+    console.log(err);
+  }
+};
+
+exports.selectStoredPosts = async (userId) => {
+  const query = `
+  SELECT storedPosts.postId, photoURL, cafes.name AS cafeName, cafes.address AS cafeAddress
+    FROM storedPosts
+      INNER JOIN posts
+        ON posts.id = storedPosts.postId
+      INNER JOIN photos
+        ON photos.postId = storedPosts.postId
+      INNER JOIN cafes
+        ON cafes.id = posts.cafeId
+          WHERE storedPosts.userId=?
+  GROUP BY storedPosts.postId;
+  `;
+  const params = [userId];
+  try {
+    const conn = await pool.getConnection();
+    try {
+      const [result] = await conn.query(query, params);
+      return result;
+    } catch (err) {
+      console.log('selectStoredPosts QUERY 오류');
       console.log(err);
     } finally {
       conn.release();

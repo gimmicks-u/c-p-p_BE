@@ -8,5 +8,6 @@ router.delete('/:id', usersController.deleteUser);
 router.get('/nickname', usersController.checkNickname);
 router.get('/email', usersController.checkEmail);
 router.get('/:id/posts', usersController.getUserPosts);
+router.get('/:id/stored-posts', usersController.getStoredPosts);
 
 module.exports = router;

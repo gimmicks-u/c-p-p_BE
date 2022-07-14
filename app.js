@@ -13,7 +13,7 @@ const cors = require('cors');
 
 let corsOptions = {
   origin: '*', // 출처 허용 옵션
-  credential: true, // 사용자 인증이 필요한 리소스(쿠키 ..등) 접근
+  credentials: true, // 사용자 인증이 필요한 리소스(쿠키 ..등) 접근
 };
 
 app.use(cors(corsOptions));
@@ -25,11 +25,11 @@ app.use(
     secret: process.env.COOKIE_SECRET,
     resave: false,
     saveUninitialized: true,
-    cookie: {
-      domain: 'cpp.co.kr',
-      httpOnly: true,
-      secure: false,
-    },
+    // cookie: {
+    //   domain: 'cpp.co.kr',
+    //   httpOnly: true,
+    //   secure: false,
+    // },
   })
 );
 app.use(passport.initialize());

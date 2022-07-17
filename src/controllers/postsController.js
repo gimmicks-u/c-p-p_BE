@@ -1,10 +1,84 @@
-const postsService = require("../services/postsService");
+const postsService = require('../services/postsService');
 
-exports.selectPosts = (req, res, next) => {
-  const userId = req.query.userId;
-  const cafeId = req.qeury.cafeId;
-  const posts = postsService.selectPosts(userId, cafeId);
+//포스트 9개 요약정보 조회(해당 카페에 대한 다른 포스팅 가져오기에서 사용)
+exports.readPosts = async (req, res) => {
+  const cafeId = Number(req.query.cafeId);
+  const result = await postsService.readPosts(cafeId);
 
-  if (posts) res.json(posts);
-  else res.status(404).json({ msg: "쿼리 실패", code: 4004 });
+  let { status, ...response } = result;
+  response = 'rows' in response ? response.rows : response;
+  res.status(status).json(response);
+};
+
+//포스트 상세 정보 조회
+exports.readPost = async (req, res) => {
+  // console.log('readPost');
+  const postId = Number(req.params.id);
+  const userId = req.user ? req.user.id : 0; //현재 로그인된 사용자의 id
+  const result = await postsService.readPost(postId, userId);
+
+  const { status, ...response } = result;
+  res.status(status).json(response);
+};
+
+//포스트 수정
+exports.updatePost = async (req, res) => {
+  const postId = Number(req.params.id);
+  const { content, visited, photoURLs, receiptURL, isSponsored, cafeId, rate } =
+    req.body;
+  const postDTO = {
+    id: postId,
+    content,
+    visited,
+    receiptURL,
+    isSponsored,
+    cafeId,
+  };
+  const rateDTO = { id: postId, ...rate };
+  const photoDTOs = photoURLs.map((photoURL) => [postId, photoURL]);
+
+  const result = await postsService.updatePost(postDTO, rateDTO, photoDTOs);
+  const { status, ...response } = result;
+  res.status(status).json(response);
+};
+
+//포스트 삭제
+exports.deletePost = async (req, res) => {
+  const postId = req.params.id;
+  const result = await postsService.deletePost(postId);
+
+  const { status, ...response } = result;
+  res.status(status).json(response);
+};
+
+//최근 일주일간 포스팅된 포스트중 가장 좋아요를 많이받은 포스트 8개 조회
+//메인 페이지의 TODAY'S CPP PICK에서 사용할 것임
+exports.readMostLikesPosts = async (req, res) => {
+  const result = await postsService.readMostLikesPosts();
+
+  let { status, ...response } = result;
+  response = 'rows' in response ? response.rows : response;
+  res.status(status).json(response);
+};
+
+//포스트 좋아요
+exports.likePost = async (req, res) => {
+  const postId = req.params.id;
+  const userId = req.user.id;
+  // const userId = 1;
+
+  const result = await postsService.likePost(postId, userId);
+  const { status, ...response } = result;
+  res.status(status).json(response);
+};
+
+//포스트 저장
+exports.storePost = async (req, res) => {
+  const postId = req.params.id;
+  const userId = req.user.id;
+  // const userId = 1;
+
+  const result = await postsService.storePost(postId, userId);
+  const { status, ...response } = result;
+  res.status(status).json(response);
 };

@@ -1,5 +1,30 @@
 const postsService = require('../services/postsService');
 
+//포스트 생성
+exports.createPost = async (req, res) => {
+  // const userId = req.user.id;
+  const userId = 1;
+
+  const { cafeId, content, visited, receiptURL, isSponsored, photoURLs, rate } =
+    req.body;
+
+  const postDTO = {
+    userId,
+    cafeId,
+    content,
+    visited,
+    receiptURL,
+    isSponsored,
+  };
+  const rateDTO = { ...rate };
+  // const photoURLs = photoURLs.map((photoURL) => photoURL);
+
+  const result = await postsService.createPost(postDTO, rateDTO, photoURLs);
+
+  const { status, ...response } = result;
+  res.status(status).json(response);
+};
+
 //포스트 9개 요약정보 조회(해당 카페에 대한 다른 포스팅 가져오기에서 사용)
 exports.readPosts = async (req, res) => {
   const cafeId = Number(req.query.cafeId);
@@ -81,4 +106,21 @@ exports.storePost = async (req, res) => {
   const result = await postsService.storePost(postId, userId);
   const { status, ...response } = result;
   res.status(status).json(response);
+};
+
+//포스트 사진 업로드
+exports.uploadPhoto = (req, res, next) => {
+  //사진 업로드시 예외 발생 할 경우에만 함수가 리턴된다
+  const result = postsService.uploadPhoto(req, res, next);
+
+  if (result) {
+    const { status, ...response } = result;
+    res.status(status).json(response);
+  }
+};
+//포스트 사진 업로드 후 넘어오는 요청을 처리할 컨트롤러
+exports.uploadPhotoAfter = (req, res) => {
+  res
+    .status(201)
+    .json({ photoURL: req.file.location, message: '사진 업로드 완료' });
 };

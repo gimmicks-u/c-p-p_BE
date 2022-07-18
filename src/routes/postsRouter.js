@@ -1,6 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const postsController = require('../controllers/postsController');
+const upload = require('../middlewares/package/multer');
+
+//포스트 등록(생성)
+router.post('/', postsController.createPost);
 
 //포스트 조회(카페 id로 필터링해서 조회,9개 조회)(해당 카페에 대한 다른 포스팅 가져오기에서 사용)
 router.get('/', postsController.readPosts);
@@ -22,5 +26,12 @@ router.get('/:id/like', postsController.likePost);
 
 //포스트 저장
 router.get('/:id/store', postsController.storePost);
+
+//포스트 사진 업로드
+router.post(
+  '/photo',
+  postsController.uploadPhoto,
+  postsController.uploadPhotoAfter
+);
 
 module.exports = router;

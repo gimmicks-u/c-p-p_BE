@@ -16,21 +16,18 @@ exports.createUser = async (userDTO) => {
     userDTO.provider,
     userDTO.snsId,
   ];
+
+  const conn = await pool.getConnection();
   try {
-    const conn = await pool.getConnection();
-    try {
-      const [result] = await conn.query(query, params);
-      console.log(result);
-      return result.insertId;
-    } catch (err) {
-      console.log('createUser QUERY 오류');
-      console.log(err);
-    } finally {
-      conn.release();
-    }
+    const [result] = await conn.query(query, params);
+    console.log(result);
+    return result.insertId;
   } catch (err) {
-    console.log('커넥션풀에서 커넥션 가져오기 오류');
+    console.log('createUser QUERY 오류');
     console.log(err);
+    throw err;
+  } finally {
+    conn.release();
   }
 };
 
@@ -40,20 +37,17 @@ exports.selectUser = async (userId) => {
   FROM users`;
 
   const params = [userId];
+
+  const conn = await pool.getConnection();
   try {
-    const conn = await pool.getConnection();
-    try {
-      const [rows] = await conn.query(query, params);
-      const row = rows[0];
-      return row ? row : {};
-    } catch (err) {
-      console.log('createUser QUERY 오류');
-      console.log(err);
-    } finally {
-      conn.release();
-    }
+    const [rows] = await conn.query(query, params);
+    const row = rows[0];
+    return row;
   } catch (err) {
-    console.log('커넥션풀에서 커넥션 가져오기 오류');
+    console.log('createUser QUERY 오류');
     console.log(err);
+    throw err;
+  } finally {
+    conn.release();
   }
 };

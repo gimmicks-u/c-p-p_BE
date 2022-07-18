@@ -1,45 +1,92 @@
 const { pool } = require('../db/mysql');
 
+exports.insertPost = async (postDTO, conn) => {
+  const query = `
+    INSERT INTO posts (userId, cafeId, content, visited, receiptURL, isSponsored) 
+    VALUES(?, ?, ?, ?, ?, ?);
+  `;
+  const params = [
+    postDTO.userId,
+    postDTO.cafeId,
+    postDTO.content,
+    postDTO.visited,
+    postDTO.receiptURL,
+    postDTO.isSponsored,
+  ];
+
+  try {
+    const [result] = await conn.query(query, params);
+    return result.insertId;
+  } catch (err) {
+    console.log('insertPost QUERY 오류');
+    console.log(err);
+    throw err;
+  } finally {
+    conn.release();
+  }
+};
+
+exports.insertRate = async (rateDTO, conn) => {
+  const query = `
+    INSERT INTO rates (id, taste, vibe, service, parking, bathroom, amenity)
+    VALUES (?, ?, ?, ?, ?, ?, ?);
+  `;
+  const params = [
+    rateDTO.id,
+    rateDTO.taste,
+    rateDTO.vibe,
+    rateDTO.service,
+    rateDTO.parking,
+    rateDTO.bathroom,
+    rateDTO.amenity,
+  ];
+
+  try {
+    const [result] = await conn.query(query, params);
+    return result.insertId;
+  } catch (err) {
+    console.log('insertRate QUERY 오류');
+    console.log(err);
+    throw err;
+  } finally {
+    conn.release();
+  }
+};
+
 exports.selectPosts = async (cafeId) => {
   const query = `SELECT posts.id,posts.cafeId,posts.userId,users.nickname,users.profileURL,photos.photoURL
   FROM posts INNER JOIN 
   users on posts.userId=users.id INNER JOIN 
   photos on posts.id=photos.postId WHERE posts.cafeId = ? AND posts.deletedAt is NULL GROUP BY posts.id LIMIT 9`;
   const params = [cafeId];
+
+  const conn = await pool.getConnection();
   try {
-    const conn = await pool.getConnection();
-    try {
-      const [rows] = await conn.query(query, params);
-      return rows;
-    } catch (err) {
-      console.log('selectPosts QUERY 오류');
-      console.log(err);
-    } finally {
-      conn.release();
-    }
+    const [rows] = await conn.query(query, params);
+    return rows;
   } catch (err) {
-    console.log('커넥션풀에서 커넥션 가져오기 오류');
+    console.log('selectPosts QUERY 오류');
     console.log(err);
+    throw err;
+  } finally {
+    conn.release();
   }
 };
 
 exports.increaseViews = async (postId) => {
   const query = `UPDATE posts set views=views+1 where id = ? AND deletedAt is NULL`;
   const params = [postId];
+
+  const conn = await pool.getConnection();
   try {
-    const conn = await pool.getConnection();
-    try {
-      const [result] = await conn.query(query, params);
-      return result.affectedRows;
-    } catch (err) {
-      console.log('increaseViews QUERY 오류');
-      console.log(err);
-    } finally {
-      conn.release();
-    }
+    const [result] = await conn.query(query, params);
+    return result.affectedRows;
   } catch (err) {
-    console.log('커넥션풀에서 커넥션 가져오기 오류');
+    console.log('increaseViews QUERY 오류');
     console.log(err);
+    throw err;
+  } finally {
+    conn.release();
   }
 };
 exports.selectPost = async (postId, userId) => {
@@ -50,27 +97,25 @@ exports.selectPost = async (postId, userId) => {
   FROM posts LEFT JOIN (SELECT postId,count(userId) as "likes" from likes GROUP BY postId) A
   ON posts.id = A.postId WHERE posts.id=? AND posts.deletedAt is NULL`;
   const params = [userId, postId, userId, postId, postId];
+
+  const conn = await pool.getConnection();
   try {
-    const conn = await pool.getConnection();
-    try {
-      const [rows] = await conn.query(query, params);
-      const row = rows[0];
-      //isLiked프로퍼티와 isStored 프로퍼티의 값이 0이면 false로 1이면 true로 변환
-      if (row) {
-        row['isSponsored'] = row['isSponsored'] ? true : false;
-        row['isLiked'] = row['isLiked'] ? true : false;
-        row['isStored'] = row['isStored'] ? true : false;
-      }
-      return row ? row : {};
-    } catch (err) {
-      console.log('selectPost QUERY 오류');
-      console.log(err);
-    } finally {
-      conn.release();
+    const [rows] = await conn.query(query, params);
+    const row = rows[0];
+    //isLiked프로퍼티와 isStored 프로퍼티의 값이 0이면 false로 1이면 true로 변환
+    if (row) {
+      row['isSponsored'] = row['isSponsored'] ? true : false;
+      row['isLiked'] = row['isLiked'] ? true : false;
+      row['isStored'] = row['isStored'] ? true : false;
     }
+    // return row ? row : {};
+    return row;
   } catch (err) {
-    console.log('커넥션풀에서 커넥션 가져오기 오류');
+    console.log('selectPost QUERY 오류');
     console.log(err);
+    throw err;
+  } finally {
+    conn.release();
   }
 };
 
@@ -78,21 +123,19 @@ exports.selectRate = async (postId) => {
   const query = `SELECT taste,vibe,service,parking,bathroom,amenity FROM rates
   WHERE id = ?`;
   const params = [postId];
+
+  const conn = await pool.getConnection();
   try {
-    const conn = await pool.getConnection();
-    try {
-      const [rows] = await conn.query(query, params);
-      const row = rows[0];
-      return row ? row : {};
-    } catch (err) {
-      console.log('selectPost QUERY 오류');
-      console.log(err);
-    } finally {
-      conn.release();
-    }
+    const [rows] = await conn.query(query, params);
+    const row = rows[0];
+    // return row ? row : {};
+    return row;
   } catch (err) {
-    console.log('커넥션풀에서 커넥션 가져오기 오류');
+    console.log('selectPost QUERY 오류');
     console.log(err);
+    throw err;
+  } finally {
+    conn.release();
   }
 };
 
@@ -100,21 +143,19 @@ exports.selectCafe = async (cafeId) => {
   const query = `SELECT id,name,address,phone,openingHours FROM cafes
   WHERE id = ?`;
   const params = [cafeId];
+
+  const conn = await pool.getConnection();
   try {
-    const conn = await pool.getConnection();
-    try {
-      const [rows] = await conn.query(query, params);
-      const row = rows[0];
-      return row ? row : {};
-    } catch (err) {
-      console.log('selectCafe QUERY 오류');
-      console.log(err);
-    } finally {
-      conn.release();
-    }
+    const [rows] = await conn.query(query, params);
+    const row = rows[0];
+    // return row ? row : {};
+    return row;
   } catch (err) {
-    console.log('커넥션풀에서 커넥션 가져오기 오류');
+    console.log('selectCafe QUERY 오류');
     console.log(err);
+    throw err;
+  } finally {
+    conn.release();
   }
 };
 
@@ -122,20 +163,17 @@ exports.selectPhotoURLs = async (postId) => {
   const query = `SELECT photoURL FROM photos
   WHERE postId = ?`;
   const params = [postId];
+
+  const conn = await pool.getConnection();
   try {
-    const conn = await pool.getConnection();
-    try {
-      const [rows] = await conn.query(query, params);
-      return rows;
-    } catch (err) {
-      console.log('selectPhotoURLs QUERY 오류');
-      console.log(err);
-    } finally {
-      conn.release();
-    }
+    const [rows] = await conn.query(query, params);
+    return rows;
   } catch (err) {
-    console.log('커넥션풀에서 커넥션 가져오기 오류');
+    console.log('selectPhotoURLs QUERY 오류');
     console.log(err);
+    throw err;
+  } finally {
+    conn.release();
   }
 };
 
@@ -143,21 +181,19 @@ exports.selectUser = async (userId) => {
   const query = `SELECT id,nickname,profileURL FROM users
   WHERE id = ? AND deletedAt is NULL`;
   const params = [userId];
+
+  const conn = await pool.getConnection();
   try {
-    const conn = await pool.getConnection();
-    try {
-      const [rows] = await conn.query(query, params);
-      const row = rows[0];
-      return row ? row : {};
-    } catch (err) {
-      console.log('selectUser QUERY 오류');
-      console.log(err);
-    } finally {
-      conn.release();
-    }
+    const [rows] = await conn.query(query, params);
+    const row = rows[0];
+    // return row ? row : {};
+    return row;
   } catch (err) {
-    console.log('커넥션풀에서 커넥션 가져오기 오류');
+    console.log('selectUser QUERY 오류');
     console.log(err);
+    throw err;
+  } finally {
+    conn.release();
   }
 };
 exports.updatePost = async (postDTO, conn) => {
@@ -234,20 +270,17 @@ exports.insertPhotos = async (photoDTOs, conn) => {
 exports.deletePost = async (postId) => {
   const query = `UPDATE posts set deletedAt=CURRENT_TIMESTAMP where id = ?`;
   const params = [postId];
+
+  const conn = await pool.getConnection();
   try {
-    const conn = await pool.getConnection();
-    try {
-      const [result] = await conn.query(query, params);
-      return result.affectedRows;
-    } catch (err) {
-      console.log('deletePost QUERY 오류');
-      console.log(err);
-    } finally {
-      conn.release();
-    }
+    const [result] = await conn.query(query, params);
+    return result.affectedRows;
   } catch (err) {
-    console.log('커넥션풀에서 커넥션 가져오기 오류');
+    console.log('deletePost QUERY 오류');
     console.log(err);
+    throw err;
+  } finally {
+    conn.release();
   }
 };
 
@@ -260,20 +293,15 @@ exports.selectMostLikesPosts = async () => {
   users ON posts.userId = users.id INNER JOIN
   cafes ON posts.cafeId = cafes.id WHERE posts.createdAt > CURRENT_TIMESTAMP + INTERVAL -7 DAY ORDER BY B.likes DESC LIMIT 18446744073709551615) C GROUP BY cafeId ORDER BY NULL LIMIT 8;`;
 
+  const conn = await pool.getConnection();
   try {
-    const conn = await pool.getConnection();
-    try {
-      const [rows] = await conn.query(query);
-      return rows;
-    } catch (err) {
-      console.log('selectMostLikesPosts QUERY 오류');
-      console.log(err);
-    } finally {
-      conn.release();
-    }
+    const [rows] = await conn.query(query);
+    return rows;
   } catch (err) {
-    console.log('커넥션풀에서 커넥션 가져오기 오류');
+    console.log('selectMostLikesPosts QUERY 오류');
     console.log(err);
+  } finally {
+    conn.release();
   }
 };
 exports.isExistPost = async (postId) => {

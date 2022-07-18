@@ -12,7 +12,7 @@ const passport = require('passport');
 const cors = require('cors');
 
 let corsOptions = {
-  origin: 'http://www.cpp.co.kr:3000/', // 출처 허용 옵션
+  origin: 'http://www.cpp.co.kr:3000', // 출처 허용 옵션
   credentials: true, // 사용자 인증이 필요한 리소스(쿠키 ..등) 접근
 };
 

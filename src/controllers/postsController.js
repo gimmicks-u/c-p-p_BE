@@ -10,8 +10,8 @@ exports.selectPosts = (req, res, next) => {
 };
 
 exports.createPost = async (req, res) => {
+  // dev : 현재는 userId를 body에서 가져오게 설정.
   // const { userId } = req.user.id;
-
   const {
     userId,
     content,
@@ -23,38 +23,17 @@ exports.createPost = async (req, res) => {
     rate,
   } = req.body;
 
-  let postId = null;
-  try {
-    // 1. post
-    const postDTO = {
-      userId,
-      cafeId,
-      content,
-      visited,
-      receiptURL,
-      isSponsored,
-    };
-    postId = await postsService.createPost(postDTO);
+  const postDTO = {
+    userId,
+    cafeId,
+    content,
+    visited,
+    receiptURL,
+    isSponsored,
+  };
 
-    // 2. photo
-    // ex) photoDTO = [[postId, '1번 URL'], [postId, '2번 URL']...]
-    const photoDTO = photoURLs.map((url) => [postId, url]);
-    await postsService.createPhoto(photoDTO);
+  const result = await postsService.createPost(postDTO, rate, photoURLs);
+  const { status, ...response } = result;
 
-    // 3. rate
-    const rateDTO = { postId, ...rate };
-    await postsService.createRate(rateDTO);
-  } catch (err) {
-    console.log(err);
-    res.status(400);
-    res.json({
-      message: '입력 정보를 확인해주세요',
-    });
-  }
-
-  res.status(201);
-  res.json({
-    id: postId,
-    message: '게시물이 등록되었습니다.',
-  });
+  res.status(status).json(response);
 };

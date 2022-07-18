@@ -48,21 +48,18 @@ exports.updateUser = async (userDTO) => {
     userDTO.profileURL,
     userDTO.id,
   ];
+
+  const conn = await pool.getConnection();
   try {
-    const conn = await pool.getConnection();
-    try {
-      const [result] = await conn.query(query, params);
-      // console.log(result);
-      return result.changedRows;
-    } catch (err) {
-      console.log('updateUser QUERY 오류');
-      console.log(err);
-    } finally {
-      conn.release();
-    }
+    const [result] = await conn.query(query, params);
+    // console.log(result);
+    return result.changedRows;
   } catch (err) {
-    console.log('커넥션풀에서 커넥션 가져오기 오류');
+    console.log('updateUser QUERY 오류');
     console.log(err);
+    throw err;
+  } finally {
+    conn.release();
   }
 };
 
@@ -73,52 +70,39 @@ exports.getPasswordInDB = async (userDTO) => {
     WHERE id=?
   `;
   const params = [userDTO.id];
+
+  const conn = await pool.getConnection();
   try {
-    const conn = await pool.getConnection();
-    try {
-      const [rows] = await conn.query(query, params);
-      return rows[0].password;
-    } catch (err) {
-      console.log('getPasswordInDB QUERY 오류');
-      console.log(err);
-    } finally {
-      conn.release();
-    }
+    const [rows] = await conn.query(query, params);
+    return rows[0].password;
   } catch (err) {
-    console.log('커넥션풀에서 커넥션 가져오기 오류');
+    console.log('getPasswordInDB QUERY 오류');
     console.log(err);
+    throw err;
+  } finally {
+    conn.release();
   }
 };
 
 exports.deleteUser = async (userDTO) => {
-  // sql에서 비밀번호 검증시 사용할 쿼리
-  // const query = `
-  //   SELECT password INTO @pswd users WHERE id=? LIMIT 1;
-  //   UPDATE users
-  //   SET deletedAt= if(@pswd=?, now(), null)
-  //   WHERE id=?;
-  // `;
   const query = `
     UPDATE users
     SET deletedAt = now()
     where id=?
   `;
   const params = [userDTO.id];
+
+  const conn = await pool.getConnection();
   try {
-    const conn = await pool.getConnection();
-    try {
-      const [result] = await conn.query(query, params);
-      // console.log(result);
-      return result.changedRows;
-    } catch (err) {
-      console.log('deleteUser QUERY 오류');
-      console.log(err);
-    } finally {
-      conn.release();
-    }
+    const [result] = await conn.query(query, params);
+    // console.log(result);
+    return result.changedRows;
   } catch (err) {
-    console.log('커넥션풀에서 커넥션 가져오기 오류');
+    console.log('deleteUser QUERY 오류');
     console.log(err);
+    throw err;
+  } finally {
+    conn.release();
   }
 };
 
@@ -130,20 +114,17 @@ exports.checkNickname = async (nickname) => {
   ) AS success;
   `;
   const params = [nickname];
+
+  const conn = await pool.getConnection();
   try {
-    const conn = await pool.getConnection();
-    try {
-      const [result] = await conn.query(query, params);
-      return result[0].success;
-    } catch (err) {
-      console.log('checkNickname QUERY 오류');
-      console.log(err);
-    } finally {
-      conn.release();
-    }
+    const [result] = await conn.query(query, params);
+    return result[0].success;
   } catch (err) {
-    console.log('커넥션풀에서 커넥션 가져오기 오류');
+    console.log('checkNickname QUERY 오류');
     console.log(err);
+    throw err;
+  } finally {
+    conn.release();
   }
 };
 
@@ -155,20 +136,17 @@ exports.checkEmail = async (email) => {
   ) AS success;
   `;
   const params = [email];
+
+  const conn = await pool.getConnection();
   try {
-    const conn = await pool.getConnection();
-    try {
-      const [result] = await conn.query(query, params);
-      return result[0].success;
-    } catch (err) {
-      console.log('checkEmail QUERY 오류');
-      console.log(err);
-    } finally {
-      conn.release();
-    }
+    const [result] = await conn.query(query, params);
+    return result[0].success;
   } catch (err) {
-    console.log('커넥션풀에서 커넥션 가져오기 오류');
+    console.log('checkEmail QUERY 오류');
     console.log(err);
+    throw err;
+  } finally {
+    conn.release();
   }
 };
 
@@ -184,20 +162,17 @@ exports.selectUserPosts = async (userId) => {
   GROUP BY posts.id
   `;
   const params = [userId];
+
+  const conn = await pool.getConnection();
   try {
-    const conn = await pool.getConnection();
-    try {
-      const [result] = await conn.query(query, params);
-      return result;
-    } catch (err) {
-      console.log('selectUserPosts QUERY 오류');
-      console.log(err);
-    } finally {
-      conn.release();
-    }
+    const [result] = await conn.query(query, params);
+    return result;
   } catch (err) {
-    console.log('커넥션풀에서 커넥션 가져오기 오류');
+    console.log('selectUserPosts QUERY 오류');
     console.log(err);
+    throw err;
+  } finally {
+    conn.release();
   }
 };
 
@@ -215,19 +190,16 @@ exports.selectStoredPosts = async (userId) => {
   GROUP BY storedPosts.postId;
   `;
   const params = [userId];
+
+  const conn = await pool.getConnection();
   try {
-    const conn = await pool.getConnection();
-    try {
-      const [result] = await conn.query(query, params);
-      return result;
-    } catch (err) {
-      console.log('selectStoredPosts QUERY 오류');
-      console.log(err);
-    } finally {
-      conn.release();
-    }
+    const [result] = await conn.query(query, params);
+    return result;
   } catch (err) {
-    console.log('커넥션풀에서 커넥션 가져오기 오류');
+    console.log('selectStoredPosts QUERY 오류');
     console.log(err);
+    throw err;
+  } finally {
+    conn.release();
   }
 };

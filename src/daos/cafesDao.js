@@ -14,21 +14,17 @@ exports.createCafe = async (cafeDTO) => {
     cafeDTO.phone,
     cafeDTO.openingHours,
   ];
+
+  const conn = await pool.getConnection();
   try {
-    const conn = await pool.getConnection();
-    try {
-      const [result] = await conn.query(query, params);
-      // console.log(result);
-      return result.insertId;
-    } catch (err) {
-      console.log('createCafe QUERY 오류');
-      console.log(err);
-    } finally {
-      conn.release();
-    }
+    const [result] = await conn.query(query, params);
+    return result.insertId;
   } catch (err) {
-    console.log('커넥션풀에서 커넥션 가져오기 오류');
+    console.log('createCafe QUERY 오류');
     console.log(err);
+    throw err;
+  } finally {
+    conn.release();
   }
 };
 
@@ -36,20 +32,17 @@ exports.searchCafeName = async (keywordParams) => {
   const query = 'SELECT id, name, address FROM cafes WHERE name LIKE ?';
 
   const params = [keywordParams, keywordParams];
+
+  const conn = await pool.getConnection();
   try {
-    const conn = await pool.getConnection();
-    try {
-      const [row] = await conn.query(query, params);
-      return row;
-    } catch (err) {
-      console.log('searchCafeName QUERY 오류');
-      console.log(err);
-    } finally {
-      conn.release();
-    }
+    const [row] = await conn.query(query, params);
+    return row;
   } catch (err) {
-    console.log('커넥션풀에서 커넥션 가져오기 오류');
+    console.log('searchCafeName QUERY 오류');
     console.log(err);
+    throw err;
+  } finally {
+    conn.release();
   }
 };
 
@@ -57,20 +50,16 @@ exports.searchCafeAddress = async (keywordParams) => {
   const query = 'SELECT id, name, address FROM cafes WHERE address LIKE ?';
 
   const params = [keywordParams, keywordParams];
+
+  const conn = await pool.getConnection();
   try {
-    const conn = await pool.getConnection();
-    try {
-      const [row] = await conn.query(query, params);
-      return row;
-    } catch (err) {
-      console.log('searchCafeAddress QUERY 오류');
-      console.log(err);
-    } finally {
-      conn.release();
-    }
+    const [row] = await conn.query(query, params);
+    return row;
   } catch (err) {
-    console.log('커넥션풀에서 커넥션 가져오기 오류');
+    console.log('searchCafeAddress QUERY 오류');
     console.log(err);
+  } finally {
+    conn.release();
   }
 };
 
@@ -96,19 +85,15 @@ exports.selectCafesInMap = async (currentMapRange) => {
     currentMapRange.swLng,
     currentMapRange.neLng,
   ];
+
+  const conn = await pool.getConnection();
   try {
-    const conn = await pool.getConnection();
-    try {
-      const [row] = await conn.query(query, params);
-      return row;
-    } catch (err) {
-      console.log('selectCafesInMap QUERY 오류');
-      console.log(err);
-    } finally {
-      conn.release();
-    }
+    const [row] = await conn.query(query, params);
+    return row;
   } catch (err) {
-    console.log('커넥션풀에서 커넥션 가져오기 오류');
+    console.log('selectCafesInMap QUERY 오류');
     console.log(err);
+  } finally {
+    conn.release();
   }
 };

@@ -1,4 +1,5 @@
 const usersDao = require('../daos/usersDao');
+const sha256 = require('sha256');
 
 exports.signUpLocal = async (userDTO) => {
   const insertId = await usersDao.createUser(userDTO);
@@ -10,68 +11,90 @@ exports.signUpLocal = async (userDTO) => {
 };
 
 exports.updateUser = async (userDTO) => {
-  const changedRows = await usersDao.updateUser(userDTO);
-  const result = changedRows
-    ? { id: userDTO.id, message: '회원 정보가 수정되었습니다.', status: 200 }
-    : { message: '입력하신 정보를 확인해주세요.', status: 400 };
+  try {
+    const changedRows = await usersDao.updateUser(userDTO);
+    const result = changedRows
+      ? {
+          id: userDTO.id,
+          message: '회원 정보가 수정되었습니다.',
+          status: 200,
+        }
+      : { message: '입력하신 정보를 확인해주세요.', status: 400 };
 
-  return result;
-};
-
-exports.checkPassword = async (userDTO) => {
-  const passwordInDB = await usersDao.getPasswordInDB(userDTO);
-  const isMatchedPassword = userDTO.password === parseInt(passwordInDB);
-  const result = isMatchedPassword
-    ? { message: '비밀번호가 일치하지 않습니다.', status: 400 }
-    : {};
-  return isMatchedPassword;
+    return result;
+  } catch (err) {
+    console.log(err);
+    return { message: '잘못된 요청입니다', status: 400 };
+  }
 };
 
 exports.deleteUser = async (userDTO) => {
-  const changedRows = await usersDao.deleteUser(userDTO);
-  const result = changedRows
-    ? { id: userDTO.id, message: '회원 탈퇴되었습니다.', status: 200 }
-    : { message: '입력하신 정보를 확인해주세요.', status: 400 };
+  try {
+    // 비밀번호 확인
+    const passwordInDB = await usersDao.getPasswordInDB(userDTO);
+    const isMatchedPassword =
+      sha256(userDTO.password + process.env.PASSWORD_SALT) === passwordInDB;
+    if (!isMatchedPassword) {
+      return { message: '비밀번호가 일치하지 않습니다.', status: 401 };
+    }
+    // 유저 탈퇴
+    await usersDao.deleteUser(userDTO);
 
-  return result;
+    return { message: '회원 탈퇴되었습니다.', status: 200 };
+  } catch (err) {
+    console.log(err);
+    return { message: '잘못된 요청입니다', status: 400 };
+  }
 };
 
 exports.checkNickname = async (nickname) => {
-  const hasNickname = await usersDao.checkNickname(nickname);
-  // 닉네임 존재하면 1, 존재하지 않으면 0
-  const result = hasNickname
-    ? { message: '중복된 닉네임입니다', status: 400 }
-    : { message: '사용할 수 있는 닉네임입니다', status: 200 };
+  try {
+    const hasNickname = await usersDao.checkNickname(nickname);
+    // 닉네임 존재하면 1, 존재하지 않으면 0
+    const result = hasNickname
+      ? { message: '중복된 닉네임입니다', status: 400 }
+      : { message: '사용할 수 있는 닉네임입니다', status: 200 };
 
-  return result;
+    return result;
+  } catch (err) {
+    console.log(err);
+    return { message: '잘못된 요청입니다', status: 400 };
+  }
 };
 
 exports.checkEmail = async (email) => {
-  const hasEmail = await usersDao.checkEmail(email);
-  // 이메일 존재하면 1, 존재하지 않으면 0
-  const result = hasEmail
-    ? { message: '중복된 이메일입니다', status: 400 }
-    : { message: '사용할 수 있는 이메일입니다', status: 200 };
+  try {
+    const hasEmail = await usersDao.checkEmail(email);
+    // 이메일 존재하면 1, 존재하지 않으면 0
+    const result = hasEmail
+      ? { message: '중복된 이메일입니다', status: 400 }
+      : { message: '사용할 수 있는 이메일입니다', status: 200 };
 
-  return result;
+    return result;
+  } catch (err) {
+    console.log(err);
+    return { message: '잘못된 요청입니다', status: 400 };
+  }
 };
 
 exports.getUserPosts = async (userId) => {
-  const userPosts = await usersDao.selectUserPosts(userId);
-  const result =
-    userPosts.length !== 0
-      ? { userPosts: [...userPosts], status: 200 }
-      : { message: '잘못된 요청입니다.', status: 400 };
+  try {
+    const userPosts = await usersDao.selectUserPosts(userId);
 
-  return result;
+    return { userPosts, status: 200 };
+  } catch (err) {
+    console.log(err);
+    return { message: '잘못된 요청입니다', status: 400 };
+  }
 };
 
 exports.getStoredPosts = async (userId) => {
-  const storedPosts = await usersDao.selectStoredPosts(userId);
-  const result =
-    storedPosts.length !== 0
-      ? { storedPosts: [...storedPosts], status: 200 }
-      : { message: '잘못된 요청입니다.', status: 400 };
+  try {
+    const storedPosts = await usersDao.selectStoredPosts(userId);
 
-  return result;
+    return { storedPosts, status: 200 };
+  } catch (err) {
+    console.log(err);
+    return { message: '잘못된 요청입니다', status: 400 };
+  }
 };

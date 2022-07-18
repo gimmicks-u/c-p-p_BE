@@ -30,20 +30,12 @@ exports.deleteUser = async (req, res) => {
   const { password } = req.body;
   const userDTO = { id, password };
 
-  const isMatchedPassword = await usersService.checkPassword(userDTO);
+  const result = await usersService.deleteUser(userDTO);
+  const { status, ...response } = result;
 
-  if (!isMatchedPassword) {
-    // 비밀번호가 일치하지 않을때
-    res.status(401);
-    res.json({ message: '비밀번호가 일치하지 않습니다.' });
-  } else {
-    const result = await usersService.deleteUser(userDTO);
-    const { status, ...response } = result;
-    // 응답
-    res.status(status);
-    res.json(response);
-  }
-  console.log('checkPassword 이후');
+  // 응답
+  res.status(status);
+  res.json(response);
 };
 
 exports.checkNickname = async (req, res) => {

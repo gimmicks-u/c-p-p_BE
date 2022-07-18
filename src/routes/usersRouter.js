@@ -10,4 +10,6 @@ router.get('/email', usersController.checkEmail);
 router.get('/:id/posts', usersController.getUserPosts);
 router.get('/:id/stored-posts', usersController.getStoredPosts);
 
+router.get('/:id', usersController.selectUser);
+
 module.exports = router;

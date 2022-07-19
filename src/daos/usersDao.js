@@ -34,7 +34,7 @@ exports.createUser = async (userDTO) => {
 exports.selectUser = async (userId) => {
   const query = `SELECT id,email,name,birth,nickname,
   profileURL,provider,snsId,createdAt,updatedAt 
-  FROM users`;
+  FROM users WHERE id = ? AND deletedAt is NULL`;
 
   const params = [userId];
 

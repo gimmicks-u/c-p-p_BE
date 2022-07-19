@@ -29,9 +29,19 @@ exports.createCafe = async (cafeDTO) => {
 };
 
 exports.searchCafeName = async (keywordParams) => {
-  const query = 'SELECT id, name, address FROM cafes WHERE name LIKE ?';
-
-  const params = [keywordParams, keywordParams];
+  const query = `
+    SELECT t.id, t.name, t.address, t.postId
+      FROM
+      (
+        SELECT cafes.id, name, address, posts.id AS postId, max(posts.createdAt) AS createdAt
+        FROM cafes
+          INNER JOIN posts
+            ON posts.cafeId=cafes.id
+        WHERE name LIKE ?
+        GROUP BY cafes.id
+      ) AS t
+  `;
+  const params = [keywordParams];
 
   const conn = await pool.getConnection();
   try {
@@ -47,9 +57,19 @@ exports.searchCafeName = async (keywordParams) => {
 };
 
 exports.searchCafeAddress = async (keywordParams) => {
-  const query = 'SELECT id, name, address FROM cafes WHERE address LIKE ?';
-
-  const params = [keywordParams, keywordParams];
+  const query = `
+    SELECT t.id, t.name, t.address, t.postId
+      FROM
+      (
+        SELECT cafes.id, name, address, posts.id AS postId, max(posts.createdAt) AS createdAt
+        FROM cafes
+          INNER JOIN posts
+            ON posts.cafeId=cafes.id
+        WHERE address LIKE ?
+        GROUP BY cafes.id
+      ) AS t
+  `;
+  const params = [keywordParams];
 
   const conn = await pool.getConnection();
   try {

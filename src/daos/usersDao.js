@@ -128,7 +128,7 @@ exports.checkNickname = async (nickname) => {
   const query = `
   SELECT EXISTS
   (
-    SELECT id FROM users WHERE nickname=?
+    SELECT id FROM users WHERE nickname=? AND deletedAt is NULL
   ) AS success;
   `;
   const params = [nickname];
@@ -176,7 +176,7 @@ exports.selectUserPosts = async (userId) => {
         ON posts.id=photos.postId 
       INNER JOIN cafes
         ON posts.cafeId=cafes.id
-          WHERE posts.userId=?
+          WHERE posts.userId=? AND posts.deletedAt is NULL
   GROUP BY posts.id
   `;
   const params = [userId];
@@ -204,7 +204,7 @@ exports.selectStoredPosts = async (userId) => {
         ON photos.postId = storedPosts.postId
       INNER JOIN cafes
         ON cafes.id = posts.cafeId
-          WHERE storedPosts.userId=?
+          WHERE storedPosts.userId=? AND posts.deletedAt is NULL
   GROUP BY storedPosts.postId;
   `;
   const params = [userId];

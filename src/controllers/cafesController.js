@@ -25,10 +25,10 @@ exports.searchCafe = async (req, res) => {
 
 exports.cafesInMap = async (req, res) => {
   const currentMapRange = {
-    swLng: parseInt(req.query.swLng),
-    swLat: parseInt(req.query.swLat),
-    neLng: parseInt(req.query.neLng),
-    neLat: parseInt(req.query.neLat),
+    swLng: parseFloat(req.query.swLng),
+    swLat: parseFloat(req.query.swLat),
+    neLng: parseFloat(req.query.neLng),
+    neLat: parseFloat(req.query.neLat),
   };
 
   const currentLocation = {

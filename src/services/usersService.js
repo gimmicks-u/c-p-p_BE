@@ -1,5 +1,6 @@
 const usersDao = require('../daos/usersDao');
 const sha256 = require('sha256');
+const upload = require('../middlewares/package/multer');
 
 exports.signUpLocal = async (userDTO) => {
   try {
@@ -119,6 +120,15 @@ exports.getStoredPosts = async (userId) => {
     const storedPosts = await usersDao.selectStoredPosts(userId);
 
     return { storedPosts, status: 200 };
+  } catch (err) {
+    console.log(err);
+    return { message: '잘못된 요청입니다', status: 400 };
+  }
+};
+
+exports.uploadPhoto = (req, res, next) => {
+  try {
+    upload.single('photo')(req, res, next);
   } catch (err) {
     console.log(err);
     return { message: '잘못된 요청입니다', status: 400 };

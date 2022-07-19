@@ -198,7 +198,7 @@ exports.selectUser = async (userId) => {
 };
 exports.updatePost = async (postDTO, conn) => {
   const query = `UPDATE posts set content=ifnull(?,content),visited=ifnull(?,visited)
-  ,receiptURL=ifnull(?,receiptURL),isSponsored=ifnull(?,isSponsored),cafeId=ifnull(?,cafeId) WHERE id=? AND deletedAt is NULL`;
+  ,receiptURL=?,isSponsored=ifnull(?,isSponsored),cafeId=ifnull(?,cafeId) WHERE id=? AND deletedAt is NULL`;
   const params = [
     postDTO.content,
     postDTO.visited,
@@ -268,7 +268,7 @@ exports.insertPhotos = async (photoDTOs, conn) => {
 };
 
 exports.deletePost = async (postId) => {
-  const query = `UPDATE posts set deletedAt=CURRENT_TIMESTAMP where id = ?`;
+  const query = `UPDATE posts set deletedAt=CURRENT_TIMESTAMP where id = ? AND deletedAt IS NOT NULL`;
   const params = [postId];
 
   const conn = await pool.getConnection();
@@ -291,7 +291,7 @@ exports.selectMostLikesPosts = async () => {
   (SELECT postId,photoURL from photos GROUP BY postId) A ON posts.id=A.postId LEFT JOIN
   (SELECT postId,count(userId) as "likes" from likes GROUP BY postId) B ON posts.id=B.postId INNER JOIN
   users ON posts.userId = users.id INNER JOIN
-  cafes ON posts.cafeId = cafes.id WHERE posts.createdAt > CURRENT_TIMESTAMP + INTERVAL -7 DAY ORDER BY B.likes DESC LIMIT 18446744073709551615) C GROUP BY cafeId ORDER BY NULL LIMIT 8;`;
+  cafes ON posts.cafeId = cafes.id WHERE posts.createdAt > CURRENT_TIMESTAMP + INTERVAL -7 DAY AND posts.deletedAt IS NULL ORDER BY B.likes DESC LIMIT 18446744073709551615) C GROUP BY cafeId ORDER BY NULL LIMIT 8;`;
 
   const conn = await pool.getConnection();
   try {
@@ -482,8 +482,8 @@ exports.createPost = async (postDTO) => {
 exports.createPhoto = async (photoDTO) => {
   const query = `
     INSERT INTO photos (postId, photoURL)
-    VALUES ?;
-  `;
+    VALUES ?
+    `;
   const params = [photoDTO];
 
   try {

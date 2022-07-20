@@ -35,7 +35,7 @@ exports.searchCafeName = async (keywordParams) => {
       (
         SELECT cafes.id, name, address, posts.id AS postId, max(posts.createdAt) AS createdAt
         FROM cafes
-          INNER JOIN posts
+          LEFT JOIN posts
             ON posts.cafeId=cafes.id
         WHERE name LIKE ?
         GROUP BY cafes.id

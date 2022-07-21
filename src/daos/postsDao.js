@@ -268,7 +268,7 @@ exports.insertPhotos = async (photoDTOs, conn) => {
 };
 
 exports.deletePost = async (postId) => {
-  const query = `UPDATE posts set deletedAt=CURRENT_TIMESTAMP where id = ? AND deletedAt IS NOT NULL`;
+  const query = `UPDATE posts set deletedAt=CURRENT_TIMESTAMP where id = ? AND deletedAt IS NULL`;
   const params = [postId];
 
   const conn = await pool.getConnection();

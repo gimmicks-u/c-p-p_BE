@@ -111,6 +111,8 @@ exports.storePost = async (req, res) => {
 //포스트 사진 업로드
 exports.uploadPhoto = (req, res, next) => {
   //사진 업로드시 예외 발생 할 경우에만 함수가 리턴된다
+  //현재 사진 업로드시 예외발생시에 그냥 400번대 코드가 응답으로 전송됨
+  //해당 기능 추가 수정 필요
   const result = postsService.uploadPhoto(req, res, next);
 
   if (result) {

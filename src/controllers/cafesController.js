@@ -16,7 +16,6 @@ exports.createCafe = async (req, res) => {
 // 카페 검색
 exports.searchCafe = async (req, res) => {
   const keyword = req.query.keyword;
-  console.log(keyword);
   const result = await cafesService.searchCafe(keyword);
   const { status, ...response } = result;
 

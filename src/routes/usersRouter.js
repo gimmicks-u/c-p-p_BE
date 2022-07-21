@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const usersController = require('../controllers/usersController');
 const usersValidator = require('../middlewares/custom/validation/usersValidator');
+const authenticator = require('../middlewares/custom/authentication');
 
 // 닉네임 중복확인
 router.get(
@@ -12,18 +13,6 @@ router.get(
 
 // 이메일 중복확인
 router.get('/email', usersValidator.checkEmail, usersController.checkEmail);
-
-// 회원 정보 요청
-router.get('/:id', usersValidator.selectUser, usersController.selectUser);
-
-// 회원가입
-router.post('/', usersValidator.signUp, usersController.signUpLocal);
-
-// 회원정보 수정
-router.patch('/:id', usersValidator.updateUser, usersController.updateUser);
-
-// 회원 탈퇴
-router.delete('/:id', usersValidator.deleteUser, usersController.deleteUser);
 
 // 회원이 포스팅한 글 목록 요청
 router.get(
@@ -38,6 +27,27 @@ router.get(
   usersValidator.getStoredPosts,
   usersController.getStoredPosts
 );
+
+// 회원가입
+router.post(
+  '/',
+  authenticator.isNotLoggedIn,
+  usersValidator.signUp,
+  usersController.signUpLocal
+);
+
+// 로그인 되어있는지 체크
+// 이하 라우터들은 인증을 거치게 됨
+router.use(authenticator.isLoggedIn);
+
+// 회원 정보 요청
+router.get('/:id', usersValidator.selectUser, usersController.selectUser);
+
+// 회원정보 수정
+router.patch('/:id', usersValidator.updateUser, usersController.updateUser);
+
+// 회원 탈퇴
+router.delete('/:id', usersValidator.deleteUser, usersController.deleteUser);
 
 // 프로필 사진 업로드
 router.post(

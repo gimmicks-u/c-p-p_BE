@@ -1,0 +1,8 @@
+exports.isAuthorizedUser = (req, res, next) => {
+  const loginUserId = req.user.id;
+  const requestedUserId = req.param.id;
+
+  loginUserId !== requestedUserId
+    ? res.status(403).json({ message: '요청을 처리할 권한이 없습니다.' })
+    : next();
+};

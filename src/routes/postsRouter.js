@@ -3,6 +3,7 @@ const router = express.Router();
 const postsController = require('../controllers/postsController');
 const upload = require('../middlewares/package/multer');
 const authenticator = require('../middlewares/custom/authentication');
+const authorizator = require('../middlewares/custom/authorization/postsAuthorizator');
 
 //포스트 조회(카페 id로 필터링해서 조회,9개 조회)(해당 카페에 대한 다른 포스팅 가져오기에서 사용)
 router.get('/', postsController.readPosts);
@@ -20,12 +21,6 @@ router.use(authenticator.isLoggedIn);
 //포스트 등록(생성)
 router.post('/', postsController.createPost);
 
-//포스트 수정
-router.patch('/:id', postsController.updatePost);
-
-//포스트 삭제
-router.delete('/:id', postsController.deletePost);
-
 //포스트 좋아요
 router.get('/:id/like', postsController.likePost);
 
@@ -38,5 +33,16 @@ router.post(
   postsController.uploadPhoto,
   postsController.uploadPhotoAfter
 );
+
+// 포스트에대한 UD 권한이 있는지 체크
+// 로그인된 사용자와 요청받은 포스트의 userId 같은지 체크
+// 이하 라우터들은 인가을 거치게 됨
+router.use(authorizator.isAuthorizedUserPost);
+
+//포스트 수정
+router.patch('/:id', postsController.updatePost);
+
+//포스트 삭제
+router.delete('/:id', postsController.deletePost);
 
 module.exports = router;

@@ -268,7 +268,7 @@ exports.insertPhotos = async (photoDTOs, conn) => {
 };
 
 exports.deletePost = async (postId) => {
-  const query = `UPDATE posts set deletedAt=CURRENT_TIMESTAMP where id = ? AND deletedAt IS NOT NULL`;
+  const query = `UPDATE posts set deletedAt=CURRENT_TIMESTAMP where id = ? AND deletedAt IS NULL`;
   const params = [postId];
 
   const conn = await pool.getConnection();
@@ -525,6 +525,30 @@ exports.createRate = async (rateDTO) => {
       return result.insertId;
     } catch (err) {
       console.log('createPhoto QUERY 오류');
+      console.log(err);
+    } finally {
+      conn.release();
+    }
+  } catch (err) {
+    console.log('커넥션풀에서 커넥션 가져오기 오류');
+    console.log(err);
+  }
+};
+
+// 인가처리를 위한 함수.
+exports.selectUserIdByPostId = async (postId) => {
+  const query = `
+    SELECT userId FROM posts WHERE id = ?;
+  `;
+  const params = [postId];
+
+  try {
+    const conn = await pool.getConnection();
+    try {
+      const [rows] = await conn.query(query, params);
+      return rows[0].userId;
+    } catch (err) {
+      console.log('selectUserIdByPostId QUERY 오류');
       console.log(err);
     } finally {
       conn.release();

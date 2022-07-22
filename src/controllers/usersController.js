@@ -3,7 +3,7 @@ const usersService = require('../services/usersService');
 
 // 프로필 사진 삭제
 exports.deleteProfilePhoto = async (req, res) => {
-  const userId = req.params.id;
+  const userId = req.user.id;
 
   const result = await usersService.deleteProfilePhoto(userId);
   const { status, ...response } = result;

@@ -66,7 +66,7 @@ exports.updateUser = async (userDTO) => {
   }
 };
 
-exports.deleteUser = async (userDTO) => {
+exports.deleteUser = async (userDTO, req) => {
   try {
     // 비밀번호 확인
     const passwordInDB = await usersDao.getPasswordInDB(userDTO);
@@ -76,8 +76,16 @@ exports.deleteUser = async (userDTO) => {
       return { message: '비밀번호가 일치하지 않습니다.', status: 401 };
     }
     // 유저 탈퇴
-    await usersDao.deleteUser(userDTO);
-
+    const changedRows = await usersDao.deleteUser(userDTO);
+    console.log(changedRows);
+    if (!changedRows) {
+      return { message: '해당 회원이 존재하지 않습니다.', status: 404 };
+    }
+    req.logout((err) => {
+      if (err) {
+        throw err;
+      }
+    });
     return { message: '회원 탈퇴되었습니다.', status: 200 };
   } catch (err) {
     console.log(err);

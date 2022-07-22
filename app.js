@@ -25,11 +25,11 @@ app.use(
     secret: process.env.COOKIE_SECRET,
     resave: false,
     saveUninitialized: true,
-    cookie: {
-      domain: 'cpp.co.kr',
-      httpOnly: true,
-      secure: false,
-    },
+    // cookie: {
+    //   domain: 'cpp.co.kr',
+    //   httpOnly: true,
+    //   secure: false,
+    // },
   })
 );
 app.use(passport.initialize());

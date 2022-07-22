@@ -37,9 +37,10 @@ router.post(
   usersController.signUpLocal
 );
 
-// 로그인 되어있는지 체크
+// Authentication - 로그인 되어있는지 체크
 // 이하 라우터들은 인증을 거치게 됨
 router.use(authenticator.isLoggedIn);
+
 // 프로필 사진 업로드
 router.post(
   '/photo',
@@ -47,25 +48,40 @@ router.post(
   usersController.uploadPhotoAfter
 );
 
-// RUD 권한이 있는지 체크
+// Authorization - RUD 권한이 있는지 체크
 // 로그인된 사용자와 요청하는 파라미터가 같은지 체크
 // 이하 라우터들은 인가을 거치게 됨
-router.use(usersAuthorizator.isAuthorizedUser);
 
 // 프로필 사진 삭제
 router.delete(
-  '/photo/:id',
+  '/:id/photo',
   usersValidator.deleteProfilePhoto,
+  usersAuthorizator.isAuthorizedUser,
   usersController.deleteProfilePhoto
 );
 
 // 회원 정보 요청
-router.get('/:id', usersValidator.selectUser, usersController.selectUser);
+router.get(
+  '/:id',
+  usersValidator.selectUser,
+  usersAuthorizator.isAuthorizedUser,
+  usersController.selectUser
+);
 
 // 회원정보 수정
-router.patch('/:id', usersValidator.updateUser, usersController.updateUser);
+router.patch(
+  '/:id',
+  usersValidator.updateUser,
+  usersAuthorizator.isAuthorizedUser,
+  usersController.updateUser
+);
 
 // 회원 탈퇴
-router.delete('/:id', usersValidator.deleteUser, usersController.deleteUser);
+router.delete(
+  '/:id',
+  usersValidator.deleteUser,
+  usersAuthorizator.isAuthorizedUser,
+  usersController.deleteUser
+);
 
 module.exports = router;

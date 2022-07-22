@@ -179,13 +179,14 @@ exports.selectPhotoURLs = async (postId) => {
 
 exports.selectUser = async (userId) => {
   const query = `SELECT id,nickname,profileURL FROM users
-  WHERE id = ? AND deletedAt is NULL`;
+  WHERE id = ?`;
   const params = [userId];
 
   const conn = await pool.getConnection();
   try {
     const [rows] = await conn.query(query, params);
     const row = rows[0];
+    console.log(row);
     // return row ? row : {};
     return row;
   } catch (err) {

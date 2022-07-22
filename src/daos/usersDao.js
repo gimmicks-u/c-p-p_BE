@@ -127,7 +127,7 @@ exports.deleteUser = async (userDTO) => {
   const query = `
     UPDATE users
     SET deletedAt = now()
-    where id=?
+    where id=? AND deletedAt IS NULL
   `;
   const params = [userDTO.id];
 
@@ -149,7 +149,7 @@ exports.checkNickname = async (nickname) => {
   const query = `
   SELECT EXISTS
   (
-    SELECT id FROM users WHERE nickname=? AND deletedAt is NULL
+    SELECT id FROM users WHERE nickname=?
   ) AS success;
   `;
   const params = [nickname];

@@ -3,7 +3,7 @@ const usersService = require('../services/usersService');
 
 // 프로필 사진 삭제
 exports.deleteProfilePhoto = async (req, res) => {
-  const userId = req.user.id;
+  const userId = req.params.id;
 
   const result = await usersService.deleteProfilePhoto(userId);
   const { status, ...response } = result;
@@ -51,7 +51,7 @@ exports.deleteUser = async (req, res) => {
   const { password } = req.body;
   const userDTO = { id, password };
 
-  const result = await usersService.deleteUser(userDTO);
+  const result = await usersService.deleteUser(userDTO, req);
   const { status, ...response } = result;
 
   // 응답

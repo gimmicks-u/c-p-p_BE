@@ -2,8 +2,11 @@ const { pool } = require('../db/mysql');
 const sha256 = require('sha256');
 
 exports.selectUser = async (email, password) => {
-  const query =
-    "SELECT id,nickname,profileURL,provider FROM users WHERE email=? AND password=? AND provider='local'";
+  const query = `
+      SELECT id,nickname,profileURL,provider 
+      FROM users 
+      WHERE email=? AND password=? AND provider='local' AND deletedAt IS NULL
+    `;
   const params = [email, sha256(password + process.env.PASSWORD_SALT)];
   try {
     const conn = await pool.getConnection();

@@ -19,7 +19,7 @@ router.get('/most-likes', postsController.readMostLikesPosts);
 //포스트 상세 정보 조회
 router.get('/:id', postsValidator.readPost, postsController.readPost);
 
-// 로그인 되어있는지 체크
+// Authentication - 로그인 되어있는지 체크
 // 이하 라우터들은 인증을 거치게 됨
 router.use(authenticator.isLoggedIn);
 
@@ -45,15 +45,24 @@ router.post(
   postsController.uploadPhotoAfter
 );
 
-// 포스트에대한 UD 권한이 있는지 체크
-// 로그인된 사용자와 요청받은 포스트의 userId 같은지 체크
+// Authorization - UD 권한이 있는지 체크
+// 로그인된 사용자와 요청하는 파라미터가 같은지 체크
 // 이하 라우터들은 인가을 거치게 됨
-router.use(authorizator.isAuthorizedUserPost);
 
 //포스트 수정
-router.patch('/:id', postsController.updatePost);
+router.patch(
+  '/:id',
+  postsValidator.updatePost,
+  authorizator.isAuthorizedUserPost,
+  postsController.updatePost
+);
 
 //포스트 삭제
-router.delete('/:id', postsController.deletePost);
+router.delete(
+  '/:id',
+  postsValidator.deletePost,
+  authorizator.isAuthorizedUserPost,
+  postsController.deletePost
+);
 
 module.exports = router;

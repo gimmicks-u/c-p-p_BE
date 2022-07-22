@@ -39,3 +39,8 @@ exports.deleteUser = [
 exports.getUserPosts = [param('id').isInt(), validatorErrorChecker];
 
 exports.getStoredPosts = [param('id').isInt(), validatorErrorChecker];
+
+exports.deleteProfilePhoto = [
+  param('id').isInt().notEmpty(),
+  validatorErrorChecker,
+];

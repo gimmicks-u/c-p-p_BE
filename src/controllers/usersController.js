@@ -1,6 +1,16 @@
 const { json } = require('express');
 const usersService = require('../services/usersService');
 
+// 프로필 사진 삭제
+exports.deleteProfilePhoto = async (req, res) => {
+  const userId = req.params.id;
+
+  const result = await usersService.deleteProfilePhoto(userId);
+  const { status, ...response } = result;
+  // 응답
+  res.status(status).json(response);
+};
+
 // 회원 정보 요청
 exports.selectUser = async (req, res) => {
   const userId = req.params.id;

@@ -2,6 +2,21 @@ const usersDao = require('../daos/usersDao');
 const sha256 = require('sha256');
 const upload = require('../middlewares/package/multer');
 
+exports.deleteProfilePhoto = async (userId) => {
+  try {
+    const changedRows = await usersDao.deleteProfilePhoto(userId);
+
+    // 프로필 사진이 이미 Null일 경우 - changedRows=0
+    if (!changedRows) {
+      return { message: '삭제할 프로필 사진이 없습니다.', status: 400 };
+    }
+    return { message: '프로필 사진이 삭제되었습니다.', status: 200 };
+  } catch (err) {
+    console.log(err);
+    return { message: '잘못된 요청입니다', status: 400 };
+  }
+};
+
 exports.signUpLocal = async (userDTO) => {
   try {
     // 중복 검사

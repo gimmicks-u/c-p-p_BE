@@ -1,6 +1,28 @@
 const { pool } = require('../db/mysql');
 const sha256 = require('sha256');
 
+exports.deleteProfilePhoto = async (userId) => {
+  const query = `
+    UPDATE users
+    SET profileURL = NULL
+    where id=?
+  `;
+  const params = [userId];
+
+  const conn = await pool.getConnection();
+  try {
+    const [result] = await conn.query(query, params);
+    console.log(result.changedRows);
+    return result.changedRows;
+  } catch (err) {
+    console.log('deleteProfilePhoto QUERY 오류');
+    console.log(err);
+    throw err;
+  } finally {
+    conn.release();
+  }
+};
+
 exports.createUser = async (userDTO) => {
   const query =
     'INSERT INTO users (email,password,name,birth,nickname,profileURL,provider,snsId) VALUES(?,?,?,?,?,?,?,?)';

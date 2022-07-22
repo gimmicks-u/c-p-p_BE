@@ -52,6 +52,13 @@ router.post(
 // 이하 라우터들은 인가을 거치게 됨
 router.use(usersAuthorizator.isAuthorizedUser);
 
+// 프로필 사진 삭제
+router.delete(
+  '/photo/:id',
+  usersValidator.deleteProfilePhoto,
+  usersController.deleteProfilePhoto
+);
+
 // 회원 정보 요청
 router.get('/:id', usersValidator.selectUser, usersController.selectUser);
 

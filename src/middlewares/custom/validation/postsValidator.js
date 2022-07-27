@@ -5,7 +5,7 @@ exports.createPost = [
   body('content').notEmpty().isString(),
   body('visited').notEmpty().isString().isDate(),
   body('photoURLs').notEmpty().isArray().isURL(),
-  body('receiptURL').notEmpty().isString().isURL(),
+  // body('receiptURL').notEmpty().isString().isURL(),
   body('isSponsored').notEmpty().isBoolean(),
   body('cafeId').notEmpty().isInt(),
   body('rate').notEmpty().isObject(),

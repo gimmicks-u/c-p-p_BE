@@ -7,7 +7,7 @@ exports.createCafe = [
   body('lat').notEmpty().isFloat({ min: 33, max: 43 }),
   body('lng').notEmpty().isFloat({ min: 124, max: 132 }),
   body('phone').notEmpty().isLength({ max: 30 }),
-  body('openingHours').notEmpty().isLength({ max: 100 }),
+  // body('openingHours').notEmpty().isLength({ max: 100 }),
   validatorErrorChecker,
 ];
 

@@ -198,8 +198,12 @@ exports.selectUser = async (userId) => {
   }
 };
 exports.updatePost = async (postDTO, conn) => {
-  const query = `UPDATE posts set content=ifnull(?,content),visited=ifnull(?,visited)
-  ,receiptURL=?,isSponsored=ifnull(?,isSponsored),cafeId=ifnull(?,cafeId) WHERE id=? AND deletedAt is NULL`;
+  const query = `
+  UPDATE posts 
+  SET content=ifnull(?,content),visited=ifnull(?,visited)
+  ,receiptURL=ifnull(?,recepiptURL),isSponsored=ifnull(?,isSponsored),cafeId=ifnull(?,cafeId) 
+  WHERE id=? AND deletedAt is NULL
+  `;
   const params = [
     postDTO.content,
     postDTO.visited,

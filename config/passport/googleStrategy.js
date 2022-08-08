@@ -13,9 +13,12 @@ module.exports = () => {
       },
       async (accessToken, refreshToken, profile, done) => {
         console.log('google profile', profile);
-        const user = await authDao.selectUserBySnsId(profile.id, 'google');
+        const user = await authDao.selectUserBySnsId(
+          Number(profile.id),
+          'google'
+        );
         if (user) {
-          if (Object.keys(user) > 0) {
+          if (Object.keys(user).length > 0) {
             done(null, user);
           } else {
             //회원가입시키는 코드

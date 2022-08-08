@@ -14,19 +14,19 @@ router.get('/logout', authenticator.isLoggedIn, authController.logout);
 
 // router.get("/login-check", authController.loginCheck);
 
-// router.get('/kakao', authController.loginKakao);
+router.get('/kakao', authController.loginKakao);
 
-// router.get(
-//   '/kakao/callback',
-//   authController.loginKakaoCallback,
-//   authController.loginAfter
-// );
+router.get(
+  '/kakao/callback',
+  authController.loginKakaoCallback,
+  authController.loginAfterSocial
+);
 
-// router.get('/google', authController.loginGoogle);
+router.get('/google', authController.loginGoogle);
 
-// router.get(
-//   '/google/callback',
-//   authController.loginGoogleCallback,
-//   authController.loginAfter
-// );
+router.get(
+  '/google/callback',
+  authController.loginGoogleCallback,
+  authController.loginAfterSocial
+);
 module.exports = router;

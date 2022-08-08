@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const postsController = require('../controllers/postsController');
-const upload = require('../middlewares/package/multer');
 const authenticator = require('../middlewares/custom/authentication');
 const authorizator = require('../middlewares/custom/authorization/postsAuthorizator');
 //const upload = require('../middlewares/package/multer');
@@ -25,12 +24,6 @@ router.use(authenticator.isLoggedIn);
 
 //포스트 등록(생성)
 router.post('/', postsValidator.createPost, postsController.createPost);
-
-//포스트 수정
-router.patch('/:id', postsValidator.updatePost, postsController.updatePost);
-
-//포스트 삭제
-router.delete('/:id', postsValidator.deletePost, postsController.deletePost);
 
 //포스트 좋아요
 router.get('/:id/like', postsValidator.likePost, postsController.likePost);

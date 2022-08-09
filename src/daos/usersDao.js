@@ -5,7 +5,7 @@ exports.deleteProfilePhoto = async (userId) => {
   const query = `
     UPDATE users
     SET profileURL = NULL
-    where id=?
+    where id = ?
   `;
   const params = [userId];
 
@@ -24,8 +24,10 @@ exports.deleteProfilePhoto = async (userId) => {
 };
 
 exports.createUser = async (userDTO) => {
-  const query =
-    'INSERT INTO users (email,password,name,birth,nickname,profileURL,provider,snsId) VALUES(?,?,?,?,?,?,?,?)';
+  const query = `
+    INSERT INTO users (email,password,name,birth,nickname,profileURL,provider,snsId) 
+    VALUES(?,?,?,?,?,?,?,?)
+  `;
   const params = [
     userDTO.email,
     userDTO.password
@@ -53,9 +55,10 @@ exports.createUser = async (userDTO) => {
 };
 
 exports.selectUser = async (userId) => {
-  const query = `SELECT id,email,name,birth,nickname,
-  profileURL,provider,snsId,createdAt,updatedAt 
-  FROM users WHERE id = ? AND deletedAt is NULL`;
+  const query = `
+    SELECT id, email, name, birth, nickname, profileURL, provider, snsId, createdAt, updatedAt 
+    FROM users WHERE id = ? AND deletedAt is NULL
+  `;
 
   const params = [userId];
 
@@ -127,7 +130,7 @@ exports.deleteUser = async (userDTO) => {
   const query = `
     UPDATE users
     SET deletedAt = now()
-    where id=? AND deletedAt IS NULL
+    WHERE id=? AND deletedAt IS NULL
   `;
   const params = [userDTO.id];
 
@@ -169,10 +172,10 @@ exports.checkNickname = async (nickname) => {
 
 exports.checkEmail = async (email) => {
   const query = `
-  SELECT EXISTS
-  (
-    SELECT id FROM users WHERE email=?
-  ) AS success;
+    SELECT EXISTS
+    (
+      SELECT id FROM users WHERE email=?
+    ) AS success;
   `;
   const params = [email];
 
@@ -191,14 +194,14 @@ exports.checkEmail = async (email) => {
 
 exports.selectUserPosts = async (userId) => {
   const query = `
-  SELECT posts.id, photoURL, cafes.name AS cafeName, cafes.address AS cafeAddress
-    FROM posts 
-      INNER JOIN photos
-        ON posts.id=photos.postId 
-      INNER JOIN cafes
-        ON posts.cafeId=cafes.id
-          WHERE posts.userId=? AND posts.deletedAt is NULL
-  GROUP BY posts.id
+    SELECT posts.id, photoURL, cafes.name AS cafeName, cafes.address AS cafeAddress
+      FROM posts 
+        INNER JOIN photos
+          ON posts.id=photos.postId 
+        INNER JOIN cafes
+          ON posts.cafeId=cafes.id
+            WHERE posts.userId=? AND posts.deletedAt is NULL
+    GROUP BY posts.id
   `;
   const params = [userId];
 
@@ -217,16 +220,16 @@ exports.selectUserPosts = async (userId) => {
 
 exports.selectStoredPosts = async (userId) => {
   const query = `
-  SELECT storedPosts.postId, photoURL, cafes.name AS cafeName, cafes.address AS cafeAddress
-    FROM storedPosts
-      INNER JOIN posts
-        ON posts.id = storedPosts.postId
-      INNER JOIN photos
-        ON photos.postId = storedPosts.postId
-      INNER JOIN cafes
-        ON cafes.id = posts.cafeId
-          WHERE storedPosts.userId=? AND posts.deletedAt is NULL
-  GROUP BY storedPosts.postId;
+    SELECT storedPosts.postId, photoURL, cafes.name AS cafeName, cafes.address AS cafeAddress
+      FROM storedPosts
+        INNER JOIN posts
+          ON posts.id = storedPosts.postId
+        INNER JOIN photos
+          ON photos.postId = storedPosts.postId
+        INNER JOIN cafes
+          ON cafes.id = posts.cafeId
+            WHERE storedPosts.userId=? AND posts.deletedAt is NULL
+    GROUP BY storedPosts.postId;
   `;
   const params = [userId];
 

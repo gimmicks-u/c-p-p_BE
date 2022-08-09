@@ -3,10 +3,10 @@ const sha256 = require('sha256');
 
 exports.selectUser = async (email, password) => {
   const query = `
-      SELECT id,nickname,profileURL,provider 
-      FROM users 
-      WHERE email=? AND password=? AND provider='local' AND deletedAt IS NULL
-    `;
+    SELECT id,nickname,profileURL,provider 
+    FROM users 
+    WHERE email=? AND password=? AND provider='local' AND deletedAt IS NULL
+  `;
   const params = [email, sha256(password + process.env.PASSWORD_SALT)];
   try {
     const conn = await pool.getConnection();
@@ -27,8 +27,11 @@ exports.selectUser = async (email, password) => {
 };
 
 exports.selectUserBySnsId = async (snsId, provider) => {
-  const query =
-    'SELECT id,nickname,profileURL,provider FROM users where snsId = ? AND provider=?';
+  const query = `
+    SELECT id,nickname,profileURL,provider 
+    FROM users 
+    WHERE snsId = ? AND provider=?
+  `;
   const params = [snsId, provider];
   try {
     const conn = await pool.getConnection();

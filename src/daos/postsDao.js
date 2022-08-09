@@ -54,10 +54,12 @@ exports.insertRate = async (rateDTO, conn) => {
 };
 
 exports.selectPosts = async (cafeId) => {
-  const query = `SELECT posts.id,posts.cafeId,posts.userId,users.nickname,users.profileURL,photos.photoURL
-  FROM posts INNER JOIN 
-  users on posts.userId=users.id INNER JOIN 
-  photos on posts.id=photos.postId WHERE posts.cafeId = ? AND posts.deletedAt is NULL GROUP BY posts.id LIMIT 9`;
+  const query = `
+    SELECT posts.id,posts.cafeId,posts.userId,users.nickname,users.profileURL,photos.photoURL
+    FROM posts INNER JOIN 
+    users on posts.userId=users.id INNER JOIN 
+    photos on posts.id=photos.postId WHERE posts.cafeId = ? AND posts.deletedAt is NULL GROUP BY posts.id LIMIT 9
+  `;
   const params = [cafeId];
 
   const conn = await pool.getConnection();
@@ -74,7 +76,11 @@ exports.selectPosts = async (cafeId) => {
 };
 
 exports.increaseViews = async (postId) => {
-  const query = `UPDATE posts set views=views+1 where id = ? AND deletedAt is NULL`;
+  const query = `
+    UPDATE posts 
+    SET views=views+1 
+    WHERE id = ? AND deletedAt is NULL
+  `;
   const params = [postId];
 
   const conn = await pool.getConnection();
@@ -90,12 +96,14 @@ exports.increaseViews = async (postId) => {
   }
 };
 exports.selectPost = async (postId, userId) => {
-  const query = `SELECT id,userId as "writer",cafeId,content,views,DATE_FORMAT(visited,'%Y-%m-%d') as visited,receiptURL,isSponsored,
-  (SELECT EXISTS (SELECT id from likes WHERE userId = ? AND postId = ?)) as "isLiked",
-  (SELECT EXISTS (SELECT id from storedPosts WHERE userId = ? AND postId = ?)) as "isStored",
-  ifnull(A.likes,0) as "likes"
-  FROM posts LEFT JOIN (SELECT postId,count(userId) as "likes" from likes GROUP BY postId) A
-  ON posts.id = A.postId WHERE posts.id=? AND posts.deletedAt is NULL`;
+  const query = `
+    SELECT id,userId AS "writer",cafeId,content,views,DATE_FORMAT(visited,'%Y-%m-%d') AS visited,receiptURL,isSponsored,
+    (SELECT EXISTS (SELECT id from likes WHERE userId = ? AND postId = ?)) AS "isLiked",
+    (SELECT EXISTS (SELECT id from storedPosts WHERE userId = ? AND postId = ?)) AS "isStored",
+    ifnull(A.likes,0) AS "likes"
+    FROM posts LEFT JOIN (SELECT postId,count(userId) AS "likes" from likes GROUP BY postId) A
+    ON posts.id = A.postId WHERE posts.id=? AND posts.deletedAt is NULL
+  `;
   const params = [userId, postId, userId, postId, postId];
 
   const conn = await pool.getConnection();
@@ -120,8 +128,11 @@ exports.selectPost = async (postId, userId) => {
 };
 
 exports.selectRate = async (postId) => {
-  const query = `SELECT taste,vibe,service,parking,bathroom,amenity FROM rates
-  WHERE id = ?`;
+  const query = `
+    SELECT taste,vibe,service,parking,bathroom,amenity 
+    FROM rates
+    WHERE id = ?
+  `;
   const params = [postId];
 
   const conn = await pool.getConnection();
@@ -140,8 +151,11 @@ exports.selectRate = async (postId) => {
 };
 
 exports.selectCafe = async (cafeId) => {
-  const query = `SELECT id,name,address,phone,openingHours FROM cafes
-  WHERE id = ?`;
+  const query = `
+    SELECT id,name,address,phone,openingHours 
+    FROM cafes
+    WHERE id = ?
+  `;
   const params = [cafeId];
 
   const conn = await pool.getConnection();
@@ -160,8 +174,11 @@ exports.selectCafe = async (cafeId) => {
 };
 
 exports.selectPhotoURLs = async (postId) => {
-  const query = `SELECT photoURL FROM photos
-  WHERE postId = ?`;
+  const query = `
+    SELECT photoURL 
+    FROM photos
+    WHERE postId = ?
+  `;
   const params = [postId];
 
   const conn = await pool.getConnection();
@@ -178,8 +195,11 @@ exports.selectPhotoURLs = async (postId) => {
 };
 
 exports.selectUser = async (userId) => {
-  const query = `SELECT id,nickname,profileURL FROM users
-  WHERE id = ?`;
+  const query = `
+    SELECT id,nickname,profileURL 
+    FROM users
+    WHERE id = ?
+  `;
   const params = [userId];
 
   const conn = await pool.getConnection();
@@ -199,10 +219,9 @@ exports.selectUser = async (userId) => {
 };
 exports.updatePost = async (postDTO, conn) => {
   const query = `
-  UPDATE posts 
-  SET content=ifnull(?,content),visited=ifnull(?,visited)
-  ,receiptURL=ifnull(?,receiptURL),isSponsored=ifnull(?,isSponsored),cafeId=ifnull(?,cafeId) 
-  WHERE id=? AND deletedAt is NULL
+    UPDATE posts 
+    SET content=ifnull(?,content), visited=ifnull(?,visited), receiptURL=ifnull(?,receiptURL), isSponsored=ifnull(?,isSponsored), cafeId=ifnull(?,cafeId) 
+    WHERE id=? AND deletedAt is NULL
   `;
   const params = [
     postDTO.content,
@@ -224,9 +243,11 @@ exports.updatePost = async (postDTO, conn) => {
 };
 
 exports.updateRate = async (rateDTO, conn) => {
-  const query = `UPDATE rates set taste=ifnull(?,taste),vibe=ifnull(?,vibe),service=ifnull(?,service)
-  ,parking=ifnull(?,parking),bathroom=ifnull(?,bathroom),amenity=ifnull(?,amenity)    
-  WHERE id=?`;
+  const query = `
+    UPDATE rates 
+    SET taste=ifnull(?,taste), vibe=ifnull(?,vibe), service=ifnull(?,service), parking=ifnull(?,parking), bathroom=ifnull(?,bathroom), amenity=ifnull(?,amenity)    
+    WHERE id=?
+  `;
   const params = [
     rateDTO.taste,
     rateDTO.vibe,
@@ -247,7 +268,10 @@ exports.updateRate = async (rateDTO, conn) => {
   }
 };
 exports.deletePhotos = async (postId, conn) => {
-  const query = `DELETE FROM photos WHERE postId=?`;
+  const query = `
+    DELETE FROM photos 
+    WHERE postId=?
+  `;
   const params = [postId];
 
   try {
@@ -260,8 +284,10 @@ exports.deletePhotos = async (postId, conn) => {
 };
 
 exports.insertPhotos = async (photoDTOs, conn) => {
-  const query = `INSERT INTO photos (postId, photoURL)
-    VALUES ?`;
+  const query = `
+    INSERT INTO photos (postId, photoURL)
+    VALUES ?
+    `;
   const params = [photoDTOs];
 
   try {
@@ -274,7 +300,11 @@ exports.insertPhotos = async (photoDTOs, conn) => {
 };
 
 exports.deletePost = async (postId) => {
-  const query = `UPDATE posts set deletedAt=CURRENT_TIMESTAMP where id = ? AND deletedAt IS NULL`;
+  const query = `
+    UPDATE posts 
+    SET deletedAt=CURRENT_TIMESTAMP 
+    WHERE id = ? AND deletedAt IS NULL
+  `;
   const params = [postId];
 
   const conn = await pool.getConnection();
@@ -291,13 +321,15 @@ exports.deletePost = async (postId) => {
 };
 
 exports.selectMostLikesPosts = async () => {
-  const query = `SELECT * FROM
-  (SELECT posts.id,A.photoURL,users.id as "userId",users.nickname,users.profileURL,cafes.id as "cafeId",cafes.name as "cafeName",ifnull(B.likes,0) as "likes"
-  FROM posts INNER JOIN
-  (SELECT postId,photoURL from photos GROUP BY postId) A ON posts.id=A.postId LEFT JOIN
-  (SELECT postId,count(userId) as "likes" from likes GROUP BY postId) B ON posts.id=B.postId INNER JOIN
-  users ON posts.userId = users.id INNER JOIN
-  cafes ON posts.cafeId = cafes.id WHERE posts.createdAt > CURRENT_TIMESTAMP + INTERVAL -7 DAY AND posts.deletedAt IS NULL ORDER BY B.likes DESC LIMIT 18446744073709551615) C GROUP BY cafeId ORDER BY NULL LIMIT 8;`;
+  const query = `
+    SELECT * FROM
+    (SELECT posts.id,A.photoURL,users.id AS "userId",users.nickname,users.profileURL,cafes.id AS "cafeId",cafes.name AS "cafeName",ifnull(B.likes,0) AS "likes"
+    FROM posts INNER JOIN
+    (SELECT postId,photoURL from photos GROUP BY postId) A ON posts.id=A.postId LEFT JOIN
+    (SELECT postId,count(userId) AS "likes" from likes GROUP BY postId) B ON posts.id=B.postId INNER JOIN
+    users ON posts.userId = users.id INNER JOIN
+    cafes ON posts.cafeId = cafes.id WHERE posts.createdAt > CURRENT_TIMESTAMP + INTERVAL -7 DAY AND posts.deletedAt IS NULL ORDER BY B.likes DESC LIMIT 18446744073709551615) C GROUP BY cafeId ORDER BY NULL LIMIT 8;
+  `;
 
   const conn = await pool.getConnection();
   try {
@@ -311,7 +343,9 @@ exports.selectMostLikesPosts = async () => {
   }
 };
 exports.isExistPost = async (postId) => {
-  const query = `SELECT EXISTS (SELECT id from posts WHERE id = ? AND deletedAt is NULL) as "exist"`;
+  const query = `
+    SELECT EXISTS (SELECT id from posts WHERE id = ? AND deletedAt is NULL) AS "exist"
+  `;
   const params = [postId];
 
   const conn = await pool.getConnection();
@@ -327,7 +361,9 @@ exports.isExistPost = async (postId) => {
   }
 };
 exports.isExistLike = async (postId, userId) => {
-  const query = `SELECT EXISTS (SELECT id from likes WHERE postId = ? AND userId = ?) as "exist"`;
+  const query = `
+    SELECT EXISTS (SELECT id from likes WHERE postId = ? AND userId = ?) AS "exist"
+  `;
   const params = [postId, userId];
 
   const conn = await pool.getConnection();
@@ -343,7 +379,10 @@ exports.isExistLike = async (postId, userId) => {
   }
 };
 exports.deleteLike = async (postId, userId) => {
-  const query = `DELETE FROM likes WHERE postId =? AND userId = ?`;
+  const query = `
+    DELETE FROM likes 
+    WHERE postId = ? AND userId = ?
+  `;
   const params = [postId, userId];
 
   const conn = await pool.getConnection();
@@ -359,7 +398,10 @@ exports.deleteLike = async (postId, userId) => {
   }
 };
 exports.insertLike = async (postId, userId) => {
-  const query = `INSERT INTO likes (postId,userId) VALUES(?,?)`;
+  const query = `
+    INSERT INTO likes (postId,userId) 
+    VALUES(?,?)
+  `;
   const params = [postId, userId];
 
   const conn = await pool.getConnection();
@@ -376,7 +418,9 @@ exports.insertLike = async (postId, userId) => {
 };
 
 exports.isExistStoredPost = async (postId, userId) => {
-  const query = `SELECT EXISTS (SELECT id from storedPosts WHERE postId = ? AND userId = ?) as "exist"`;
+  const query = `
+    SELECT EXISTS (SELECT id from storedPosts WHERE postId = ? AND userId = ?) AS "exist"
+  `;
   const params = [postId, userId];
 
   const conn = await pool.getConnection();
@@ -392,7 +436,10 @@ exports.isExistStoredPost = async (postId, userId) => {
   }
 };
 exports.deleteStoredPost = async (postId, userId) => {
-  const query = `DELETE FROM storedPosts WHERE postId =? AND userId = ?`;
+  const query = `
+    DELETE FROM storedPosts 
+    WHERE postId =? AND userId = ?
+  `;
   const params = [postId, userId];
 
   const conn = await pool.getConnection();
@@ -408,7 +455,10 @@ exports.deleteStoredPost = async (postId, userId) => {
   }
 };
 exports.insertStoredPost = async (postId, userId) => {
-  const query = `INSERT INTO storedPosts (postId,userId) VALUES(?,?)`;
+  const query = `
+    INSERT INTO storedPosts (postId,userId) 
+    VALUES(?,?)
+  `;
   const params = [postId, userId];
 
   const conn = await pool.getConnection();
@@ -489,7 +539,7 @@ exports.createPhoto = async (photoDTO) => {
   const query = `
     INSERT INTO photos (postId, photoURL)
     VALUES ?
-    `;
+  `;
   const params = [photoDTO];
 
   try {

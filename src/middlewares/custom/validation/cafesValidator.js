@@ -1,17 +1,16 @@
-const { body, param, oneOf, query } = require('express-validator');
+const { body, query } = require('express-validator');
 const { validatorErrorChecker } = require('./validatorErrorChecker');
-const { check } = require('express-validator/check');
 
 exports.createCafe = [
   body('name').notEmpty().isLength({ max: 30 }),
   body('address').notEmpty().isLength({ max: 50 }),
   body('lat').notEmpty().isFloat({ min: 33, max: 43 }),
   body('lng').notEmpty().isFloat({ min: 124, max: 132 }),
-  check('phone')
-    .if(body('phone').exists())
+  body('phone')
     .notEmpty()
     .isString()
-    .isLength({ max: 30 }),
+    .isLength({ max: 30 })
+    .optional({ checkFalsy: true }),
   // body('openingHours').notEmpty().isLength({ max: 100 }),
   validatorErrorChecker,
 ];

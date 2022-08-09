@@ -201,7 +201,7 @@ exports.updatePost = async (postDTO, conn) => {
   const query = `
   UPDATE posts 
   SET content=ifnull(?,content),visited=ifnull(?,visited)
-  ,receiptURL=ifnull(?,recepiptURL),isSponsored=ifnull(?,isSponsored),cafeId=ifnull(?,cafeId) 
+  ,receiptURL=ifnull(?,receiptURL),isSponsored=ifnull(?,isSponsored),cafeId=ifnull(?,cafeId) 
   WHERE id=? AND deletedAt is NULL
   `;
   const params = [
@@ -212,6 +212,7 @@ exports.updatePost = async (postDTO, conn) => {
     postDTO.cafeId,
     postDTO.id,
   ];
+
   try {
     const [result] = await conn.query(query, params);
     return result;

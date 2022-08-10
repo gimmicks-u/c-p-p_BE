@@ -1,5 +1,3 @@
-# c:p:p
-
 <p align="center">
 <img src="./cpp-banner2.png" >
 </p>
@@ -20,21 +18,13 @@
 
 ✅  C:P:P는 실제 사용한 사용자들의 솔직한 평가를 기반으로 하여 다른 사용자들에게 정보를 공유할 수 있습니다.
 
-<br>
-
 ---
-
-<br>
 
 ### [프로젝트 노션](https://shard-riverbed-e01.notion.site/C-P-P-cca45e2972f545c1b847190b35b260cd)
 
 ### [API 문서](https://shard-riverbed-e01.notion.site/71cd35915d5744ef9f37205e118f1ea2?v=fbcd74b5ddea42b5878580cdd2d1e992)
 
-<br>
-
 ---
-
-<br>
 
 ## 멤버
 

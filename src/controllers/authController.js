@@ -2,7 +2,16 @@ const authService = require('../services/authService');
 
 exports.loginAfter = (req, res) => {
   console.log(req.session);
+  console.log(req.user);
   res.json(req.user);
+};
+exports.loginAfterSocial = (req, res) => {
+  console.log(req.session);
+  console.log(req.user);
+  const user = JSON.stringify(req.user);
+  res.send(
+    `<script>window.opener.postMessage('${user}','*');window.close()</script>`
+  );
 };
 
 exports.loginLocal = (req, res, next) => {

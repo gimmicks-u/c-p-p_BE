@@ -22,9 +22,9 @@ exports.loginGoogleCallback = (req, res, next) => {
 exports.logout = (req, res) => {
   req.logout((err) => {
     if (err) {
-      res.status(401).end();
+      res.status(401).json({ message: '로그아웃 에러' });
     } else {
-      res.status(204).end();
+      res.status(200).json({ message: '로그아웃 성공' });
     }
   });
 };

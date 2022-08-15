@@ -10,6 +10,7 @@ const postsRouter = require('./src/routes/postsRouter');
 const cafesRouter = require('./src/routes/cafesRouter');
 const passport = require('passport');
 const cors = require('cors');
+const helmet = require('helmet');
 
 let corsOptions = {
   origin: 'http://www.cpp.co.kr:3000', // 출처 허용 옵션
@@ -34,6 +35,7 @@ app.use(
 );
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(helmet())
 
 app.use('/auth', authRouter);
 app.use('/users', usersRouter);

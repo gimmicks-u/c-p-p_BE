@@ -220,7 +220,7 @@ exports.selectUserPosts = async (userId) => {
 
 exports.selectStoredPosts = async (userId) => {
   const query = `
-    SELECT storedPosts.postId, photoURL, cafes.name AS cafeName, cafes.address AS cafeAddress
+    SELECT storedPosts.postId as "id", photoURL, cafes.name AS cafeName, cafes.address AS cafeAddress
       FROM storedPosts
         INNER JOIN posts
           ON posts.id = storedPosts.postId

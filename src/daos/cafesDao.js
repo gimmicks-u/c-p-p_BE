@@ -33,11 +33,11 @@ exports.searchCafeName = async (keywordParams) => {
     SELECT t.id, t.name, t.address, t.postId
       FROM
       (
-        SELECT cafes.id, name, address, posts.id AS postId, max(posts.createdAt) AS createdAt
+        SELECT cafes.id, name, address, posts.id AS "postId", max(posts.createdAt) AS createdAt
         FROM cafes
-          LEFT JOIN posts
+          INNER JOIN posts
             ON posts.cafeId=cafes.id
-        WHERE name LIKE ?
+        WHERE name LIKE ? AND posts.deletedAt IS NULL
         GROUP BY cafes.id
       ) AS t
   `;
@@ -61,11 +61,11 @@ exports.searchCafeAddress = async (keywordParams) => {
     SELECT t.id, t.name, t.address, t.postId
       FROM
       (
-        SELECT cafes.id, name, address, posts.id AS postId, max(posts.createdAt) AS createdAt
+        SELECT cafes.id, name, address, posts.id AS "postId", max(posts.createdAt) AS createdAt
         FROM cafes
           INNER JOIN posts
             ON posts.cafeId=cafes.id
-        WHERE address LIKE ?
+        WHERE address LIKE ? AND posts.deletedAt IS NULL
         GROUP BY cafes.id
       ) AS t
   `;

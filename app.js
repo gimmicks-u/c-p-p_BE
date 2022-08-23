@@ -35,7 +35,18 @@ app.use(
 );
 app.use(passport.initialize());
 app.use(passport.session());
-// app.use(helmet())
+
+const cspOptions = {
+  directives: {
+    ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+    'script-src': ["'self'", '*.cpp.co.kr', "'unsafe-inline'"],
+  },
+};
+app.use(
+  helmet({
+    contentSecurityPolicy: cspOptions,
+  })
+);
 
 app.use('/auth', authRouter);
 app.use('/users', usersRouter);
